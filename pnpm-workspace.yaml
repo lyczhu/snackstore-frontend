@@ -1,0 +1,49 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+
+# pnpm 11 配置（pnpm 11 已不再从 .npmrc 读取 pnpm 专属设置，统一在此声明）
+autoInstallPeers: true
+strictPeerDependencies: false
+shamefullyHoist: false
+
+onlyBuiltDependencies:
+  - '@parcel/watcher'
+  - simple-git-hooks
+
+allowBuilds:
+  '@parcel/watcher': true
+  simple-git-hooks: true
+
+catalog:
+  vue: ^3.5.30
+  vue-router: ^5.0.3
+  pinia: ^3.0.4
+  axios: ^1.16.0
+  vite: ^8.0.10
+  '@vitejs/plugin-vue': ^6.0.0
+  sass: ^1.99.0
+  unplugin-auto-import: ^19.2.0
+  unplugin-vue-components: ^28.5.0
+  # 工程化工具链（2026-07 锁定）
+  '@eslint/js': ^10.0.1
+  eslint: ^10.7.0
+  eslint-plugin-vue: ^10.10.0
+  eslint-config-prettier: ^10.1.8
+  prettier: ^3.9.6
+  globals: ^17.7.0
+  vitest: ^4.1.10
+  '@vitest/coverage-v8': ^4.1.10
+  happy-dom: ^20.11.1
+  jsdom: ^29.1.1
+  '@vue/test-utils': ^2.4.11
+  lint-staged: ^17.2.0
+  simple-git-hooks: ^2.13.1
+  rollup-plugin-visualizer: ^7.0.1
+  size-limit: ^12.1.0
+  '@size-limit/file': ^12.1.0
+
+# 供应策略：minimumReleaseAge 要求依赖发布满一定时长，lint-staged 属已知可信工具，
+# 发布较新，按策略豁免（与全局 minimumReleaseAge 配套，勿删）
+minimumReleaseAgeExclude:
+  - lint-staged@17.2.0

@@ -1,0 +1,67 @@
+/* ================= 设计令牌 ================= */
+:root {
+  /* 品牌与布局 */
+  --brand-bg: #1a1a2e;
+  --brand-bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  --page-bg: #f5f5f5;
+
+  /* 文本（#666 起步以满足 WCAG AA 4.5:1 对比度） */
+  --text-primary: #333;
+  --text-secondary: #666;
+  --text-inverse: #fff;
+
+  /* Element Plus 主题色统一 */
+  --el-color-primary: #409eff;
+
+  /* 统计卡语义色（替代 inline style） */
+  --stat-blue: #409eff;
+  --stat-green: #67c23a;
+  --stat-orange: #e6a23c;
+  --stat-red: #f56c6c;
+
+  /* 布局尺寸 */
+  --aside-width: 220px;
+}
+
+/* ================= 基础 reset ================= */
+/* 仅保留 box-sizing，避免全局 * { margin:0 } 干扰 EP 组件内部间距预期 */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  /* 字体栈补充中文字体，保证 Windows 下中文渲染可控 */
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  color: var(--text-primary);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin: 0;
+}
+
+/* ================= 无障碍（④） ================= */
+:focus-visible {
+  outline: 2px solid var(--el-color-primary);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

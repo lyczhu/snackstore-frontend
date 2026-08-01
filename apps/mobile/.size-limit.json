@@ -1,0 +1,20 @@
+[
+  {
+    "name": "mobile 入口 JS (gzip)",
+    "path": "dist/assets/index-*.js",
+    "limit": "10 KB",
+    "gzip": true
+  },
+  {
+    "name": "mobile 首屏 vendor JS (gzip)",
+    "path": "dist/assets/vendor-*.js",
+    "limit": "100 KB",
+    "gzip": true
+  },
+  {
+    "name": "mobile 全部 JS 合计 (gzip)",
+    "path": "dist/assets/*.js",
+    "limit": "150 KB",
+    "gzip": true
+  }
+]

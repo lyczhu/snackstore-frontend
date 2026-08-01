@@ -1,0 +1,19 @@
+# 依赖与产物
+node_modules/
+dist/
+coverage/
+pnpm-lock.yaml
+
+# 压缩产物
+*.br
+*.gz
+
+# 自动生成的声明文件
+auto-imports.d.ts
+components.d.ts
+
+# 产物分析报告
+report.html
+
+# AI 助手记忆
+.workbuddy/

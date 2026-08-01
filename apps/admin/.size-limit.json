@@ -1,0 +1,26 @@
+[
+  {
+    "name": "admin 首屏 JS（index + vendor + axios，gzip）",
+    "path": ["dist/assets/index-*.js", "dist/assets/vendor-*.js"],
+    "limit": "40 KB",
+    "gzip": true
+  },
+  {
+    "name": "admin element-plus 懒加载 chunk (gzip)",
+    "path": "dist/assets/element-plus-*.js",
+    "limit": "175 KB",
+    "gzip": true
+  },
+  {
+    "name": "admin echarts 懒加载 chunk (gzip)",
+    "path": "dist/assets/echarts-*.js",
+    "limit": "190 KB",
+    "gzip": true
+  },
+  {
+    "name": "admin 全部 JS 合计 (gzip)",
+    "path": "dist/assets/*.js",
+    "limit": "400 KB",
+    "gzip": true
+  }
+]

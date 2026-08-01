@@ -1,0 +1,51 @@
+{
+  "name": "snackstore",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "packageManager": "pnpm@11.16.0+sha512.b767e9a98fc87aec0f42daefcd0e84941c2cdb45d73c4e1e68860fb2bdfdbe032ab592105479e5e05c237f740c8a5ffdbbb52385797ddc2296745a1bbb883e8d",
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=11"
+  },
+  "scripts": {
+    "dev": "pnpm --parallel --filter \"./apps/*\" dev",
+    "dev:admin": "pnpm --filter @snackstore/admin dev",
+    "dev:mobile": "pnpm --filter @snackstore/mobile dev",
+    "build": "pnpm --filter \"./apps/*\" build",
+    "build:admin": "pnpm --filter @snackstore/admin build",
+    "build:mobile": "pnpm --filter @snackstore/mobile build",
+    "preview": "pnpm --parallel --filter \"./apps/*\" preview",
+    "preview:admin": "pnpm --filter @snackstore/admin preview",
+    "preview:mobile": "pnpm --filter @snackstore/mobile preview",
+    "clean": "pnpm -r exec rimraf node_modules dist && rimraf node_modules",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "pnpm -r run test",
+    "test:coverage": "pnpm -r exec vitest run --coverage",
+    "size": "pnpm build && pnpm -r run size"
+  },
+  "devDependencies": {
+    "@size-limit/file": "catalog:",
+    "@snackstore/eslint-config": "workspace:*",
+    "eslint": "catalog:",
+    "lint-staged": "catalog:",
+    "prettier": "catalog:",
+    "simple-git-hooks": "catalog:",
+    "size-limit": "catalog:"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm exec lint-staged"
+  },
+  "lint-staged": {
+    "*.{js,vue}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{css,scss,md,json,yml,yaml,html}": [
+      "prettier --write"
+    ]
+  }
+}
