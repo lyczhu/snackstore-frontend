@@ -68,8 +68,8 @@ const {
   onLoad,
   resetAndReload
 } = usePagedList({
-  fetcher: (pageNum, pageSize) =>
-    getProductList({ categoryId: currentCategoryId.value, pageNum, pageSize, status: 1 }),
+  fetcher: (pageNum, pageSize, signal) =>
+    getProductList({ categoryId: currentCategoryId.value, pageNum, pageSize, status: 1 }, signal),
   guard: () => !!currentCategoryId.value
 })
 

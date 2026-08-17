@@ -96,11 +96,11 @@ const {
   onLoad,
   resetAndReload
 } = usePagedList({
-  fetcher: (pageNum, pageSize) => {
+  fetcher: (pageNum, pageSize, signal) => {
     const params = { pageNum, pageSize, status: 1 }
     if (currentCategoryId.value) params.categoryId = currentCategoryId.value
     if (keyword.value) params.keyword = keyword.value
-    return getProductList(params)
+    return getProductList(params, signal)
   }
 })
 

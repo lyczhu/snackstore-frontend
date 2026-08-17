@@ -95,11 +95,11 @@ const {
   onLoad,
   resetAndReload
 } = usePagedList({
-  fetcher: (pageNum, pageSize) => {
+  fetcher: (pageNum, pageSize, signal) => {
     const params = { userId: userStore.userInfo?.id, pageNum, pageSize }
     if (activeTab.value === 'pending') params.status = 0
     if (activeTab.value === 'completed') params.status = 1
-    return getOrderList(params)
+    return getOrderList(params, signal)
   }
 })
 // 订单首屏由 van-list immediate-check 触发 onLoad

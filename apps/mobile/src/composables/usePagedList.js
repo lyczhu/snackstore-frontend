@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { ref, onBeforeUnmount } from 'vue'
 
 /**
  * van-list 上拉分页加载的通用逻辑
@@ -10,7 +10,7 @@ import { ref } from 'vue'
  * - initialLoading：首屏骨架屏；loadError：首屏失败整页错误占位（区别于翻页失败）
  *
  * @param {Object} options
- * @param {(pageNum: number, pageSize: number) => Promise<Object>} options.fetcher
+ * @param {(pageNum: number, pageSize: number, signal: AbortSignal) => Promise<Object>} options.fetcher
  *        拉取一页数据，需返回后端 Result 包装（res.data.data 为数组）
  * @param {number} [options.pageSize=10]
  * @param {() => boolean} [options.guard]
@@ -25,6 +25,10 @@ export function usePagedList({ fetcher, pageSize = 10, guard } = {}) {
   const initialLoading = ref(true)
   const loadError = ref(false)
 
+  // 组件卸载/重置后取消未完成请求，避免旧响应写回重置后的列表
+  let controller = null
+  const isCanceled = (e) => e?.name === 'CanceledError' || e?.code === 'ERR_CANCELED'
+
   async function onLoad() {
     // 前置条件未就绪：结束本次触发，保持骨架屏，等待外部调用 resetAndReload 驱动
     if (guard && !guard()) {
@@ -32,19 +36,29 @@ export function usePagedList({ fetcher, pageSize = 10, guard } = {}) {
       finished.value = true
       return
     }
+    controller?.abort()
+    controller = new AbortController()
+    const signal = controller.signal
+    let canceled = false
     try {
-      const res = await fetcher(pageNum.value, pageSize)
+      const res = await fetcher(pageNum.value, pageSize, signal)
       const list = res.data?.data || []
       items.value.push(...list)
       pageNum.value += 1
       if (list.length < pageSize) finished.value = true
-    } catch {
-      // 首屏失败显示整页错误占位；翻页失败走 van-list 内置错误态
-      if (pageNum.value === 1) loadError.value = true
-      else listError.value = true
+    } catch (e) {
+      canceled = isCanceled(e) || signal.aborted
+      if (!canceled) {
+        // 首屏失败显示整页错误占位；翻页失败走 van-list 内置错误态
+        if (pageNum.value === 1) loadError.value = true
+        else listError.value = true
+      }
     } finally {
-      loading.value = false
-      initialLoading.value = false
+      // 已取消的请求不覆写新一轮加载的状态
+      if (!canceled) {
+        loading.value = false
+        initialLoading.value = false
+      }
     }
   }
 
@@ -58,6 +72,8 @@ export function usePagedList({ fetcher, pageSize = 10, guard } = {}) {
     loading.value = true
     onLoad()
   }
+
+  onBeforeUnmount(() => controller?.abort())
 
   return {
     items,

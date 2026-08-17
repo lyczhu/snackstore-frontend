@@ -78,8 +78,13 @@ async function handleLogin() {
     const res = await postLogin(form)
     userStore.setLogin(res.data)
     showSuccessToast('登录成功')
-    const redirect = route.query.redirect || '/'
-    router.push(redirect)
+    // 登录成功后回跳原目标路由（仅允许站内相对路径，防开放重定向）
+    const redirect = route.query.redirect
+    const target =
+      typeof redirect === 'string' && redirect.startsWith('/') && !redirect.startsWith('//')
+        ? redirect
+        : '/'
+    router.push(target)
   } catch (e) {
     // 错误提示已由 request 拦截器统一处理
   } finally {
