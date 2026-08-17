@@ -11,10 +11,12 @@
   "module": "./src/index.js",
   "exports": {
     ".": "./src/index.js",
+    "./test/storage-polyfill": "./test/storage-polyfill.js",
     "./package.json": "./package.json"
   },
   "files": [
-    "src"
+    "src",
+    "test"
   ],
   "scripts": {
     "test": "vitest run",
