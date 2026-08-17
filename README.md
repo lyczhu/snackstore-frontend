@@ -43,18 +43,18 @@ pnpm dev:admin      # 仅启动后台
 
 ## 常用脚本
 
-| 脚本                                 | 说明                                                   |
-| ------------------------------------ | ------------------------------------------------------ |
+| 脚本                                    | 说明                                                   |
+| --------------------------------------- | ------------------------------------------------------ |
 | `pnpm dev` / `dev:mobile` / `dev:admin` | 启动开发服务器                                         |
-| `pnpm build`                         | 构建全部应用                                           |
-| `pnpm preview`                       | 本地预览构建产物                                       |
-| `pnpm lint`                          | ESLint 检查（`.` 全量）                                |
-| `pnpm lint:fix`                      | ESLint 自动修复                                        |
-| `pnpm format`                        | Prettier 格式化全量                                    |
-| `pnpm format:check`                  | Prettier 校验（CI 用）                                 |
-| `pnpm test`                          | 运行全部包的单测（Vitest）                             |
-| `pnpm size`                          | 构建 + 首屏/分块体积预算检查（size-limit）             |
-| `pnpm clean`                         | 清理 node_modules 与 dist（**不会**删除 `.workbuddy`） |
+| `pnpm build`                            | 构建全部应用                                           |
+| `pnpm preview`                          | 本地预览构建产物                                       |
+| `pnpm lint`                             | ESLint 检查（`.` 全量）                                |
+| `pnpm lint:fix`                         | ESLint 自动修复                                        |
+| `pnpm format`                           | Prettier 格式化全量                                    |
+| `pnpm format:check`                     | Prettier 校验（CI 用）                                 |
+| `pnpm test`                             | 运行全部包的单测（Vitest）                             |
+| `pnpm size`                             | 构建 + 首屏/分块体积预算检查（size-limit）             |
+| `pnpm clean`                            | 清理 node_modules 与 dist（**不会**删除 `.workbuddy`） |
 
 各 app 还支持 `build:analyze`（生成 `dist/report.html` 产物构成报告，不输出 sourcemap）。
 
