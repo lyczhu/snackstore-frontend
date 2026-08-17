@@ -51,7 +51,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { getUserList, putUserStatus } from '@/api/user'
+import { getUserList, patchUserStatus } from '@/api/user'
 import { ElMessage } from 'element-plus'
 import { useTable } from '@/composables/useTable'
 
@@ -66,7 +66,7 @@ async function toggleStatus(row) {
   const newStatus = row.status === 1 ? 0 : 1
   actionId.value = row.id
   try {
-    await putUserStatus(row.id, newStatus)
+    await patchUserStatus(row.id, newStatus)
     ElMessage.success(newStatus === 1 ? '已启用' : '已禁用')
     load()
   } catch (e) {

@@ -10,9 +10,9 @@ export function postAdminLogin(data) {
 }
 
 export function getUserList(params, signal) {
-  return request.get('/users', { params, signal })
+  return request.get('/admin/users', { params, signal })
 }
 
-export function putUserStatus(id, status) {
-  return request.patch(`/users/${id}/status`, null, { params: { status } })
+export function patchUserStatus(id, status) {
+  return request.patch(`/admin/users/${id}/status`, null, { params: { status } })
 }
