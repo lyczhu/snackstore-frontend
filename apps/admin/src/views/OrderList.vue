@@ -24,7 +24,7 @@
       </el-table-column>
       <el-table-column prop="status" label="状态" width="100">
         <template #default="{ row }">
-          <el-tag :type="getStatusType(row.status)">{{ getStatusText(row.status) }}</el-tag>
+          <el-tag :type="getStatusType(row.status)">{{ getOrderStatusText(row.status) }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column prop="createdAt" label="下单时间" width="180" />
@@ -71,7 +71,7 @@
           <el-descriptions-item label="订单号">{{ currentOrder.orderNo }}</el-descriptions-item>
           <el-descriptions-item label="状态">
             <el-tag :type="getStatusType(currentOrder.status)">{{
-              getStatusText(currentOrder.status)
+              getOrderStatusText(currentOrder.status)
             }}</el-tag>
           </el-descriptions-item>
           <el-descriptions-item label="收货人">{{
@@ -112,6 +112,7 @@
 import { ref } from 'vue'
 import { getOrderList, getOrderDetail, payOrder, cancelOrder } from '@/api/order'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { getOrderStatusText } from '@snackstore/shared'
 import { useTable } from '@/composables/useTable'
 
 const statusFilter = ref(null)
@@ -180,10 +181,8 @@ async function handleCancel(id) {
   }
 }
 
-function getStatusText(status) {
-  return { 0: '待支付', 1: '已完成', 2: '已取消' }[status] || '未知'
-}
-
+// 状态文案 getOrderStatusText 来自 @snackstore/shared（后端契约，两端共用）
+// el-tag 的 type 映射（与 Vant 的类型词汇不同，故保留在本端）
 function getStatusType(status) {
   return { 0: 'warning', 1: 'success', 2: 'info' }[status] || 'info'
 }

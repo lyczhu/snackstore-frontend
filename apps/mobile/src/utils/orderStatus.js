@@ -1,11 +1,10 @@
-// 订单状态映射统一收口（原在 OrderList.vue 与 OrderDetail.vue 重复定义）
-const TEXT_MAP = { 0: '待支付', 1: '已完成', 2: '已取消' }
-// 对应 van-tag 的 type（default/primary/success/warning/danger）
-const TYPE_MAP = { 0: 'warning', 1: 'success', 2: 'default' }
+// 状态文案已收口到 @snackstore/shared（后端契约，两端共用），
+// 这里 re-export 以兼容既有 @/utils/orderStatus 调用方
+export { getOrderStatusText as getStatusText } from '@snackstore/shared'
 
-export function getStatusText(status) {
-  return TEXT_MAP[status] ?? '未知'
-}
+// 对应 van-tag 的 type（default/primary/success/warning/danger），
+// 与 Element Plus 的类型词汇不同（如中性色 Vant 为 default、EP 为 info），故保留在本端
+const TYPE_MAP = { 0: 'warning', 1: 'success', 2: 'default' }
 
 export function getStatusType(status) {
   return TYPE_MAP[status] ?? 'default'

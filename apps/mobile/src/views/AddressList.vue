@@ -85,7 +85,10 @@
             </template>
           </van-field>
           <div class="form-actions">
-            <van-button block round type="primary" native-type="submit">确定</van-button>
+            <!-- 提交防重复（loading 态按钮不可点，双击不会创建重复地址） -->
+            <van-button block round type="primary" native-type="submit" :loading="submitting"
+              >确定</van-button
+            >
             <van-button block round class="cancel-btn" @click="dialogVisible = false"
               >取消</van-button
             >
@@ -115,6 +118,7 @@ const editId = ref(null)
 const formRef = ref(null)
 const initialLoading = ref(true)
 const loadError = ref(false)
+const submitting = ref(false)
 
 const form = reactive({
   receiverName: '',
@@ -173,6 +177,7 @@ function editAddress(addr) {
 }
 
 async function submitForm() {
+  submitting.value = true
   try {
     if (isEdit.value) {
       await putAddress(editId.value, form)
@@ -185,6 +190,8 @@ async function submitForm() {
     loadAddresses()
   } catch (e) {
     // 错误提示已由 request 拦截器统一处理
+  } finally {
+    submitting.value = false
   }
 }
 

@@ -53,10 +53,20 @@
             <div class="order-footer">
               <span>合计: ¥{{ order.totalAmount }}</span>
               <div v-if="order.status === 0" class="order-actions">
-                <van-button type="primary" size="small" @click.stop="handlePay(order.id)"
+                <!-- 操作期间该订单的按钮 loading 态不可点，防止双击并发支付/取消 -->
+                <van-button
+                  type="primary"
+                  size="small"
+                  :loading="actionId === order.id"
+                  @click.stop="handlePay(order.id)"
                   >支付</van-button
                 >
-                <van-button type="danger" plain size="small" @click.stop="handleCancel(order.id)"
+                <van-button
+                  type="danger"
+                  plain
+                  size="small"
+                  :loading="actionId === order.id"
+                  @click.stop="handleCancel(order.id)"
                   >取消</van-button
                 >
               </div>
@@ -83,6 +93,8 @@ import { usePagedList } from '@/composables/usePagedList'
 const router = useRouter()
 const userStore = useUserStore()
 const activeTab = ref('all')
+// 正在执行支付/取消操作的订单 id（与 admin OrderList 的 actionId 模式一致）
+const actionId = ref(null)
 
 // 分页加载逻辑已收口至 usePagedList（原与 Home / Category 三处同构重复）
 const {
@@ -114,12 +126,15 @@ async function handlePay(id) {
   } catch {
     return // 用户取消
   }
+  actionId.value = id
   try {
     await payOrder(id)
     showSuccessToast('支付成功')
     resetAndReload()
   } catch (e) {
     // 错误提示已由 request 拦截器统一处理
+  } finally {
+    actionId.value = null
   }
 }
 
@@ -129,12 +144,15 @@ async function handleCancel(id) {
   } catch {
     return // 用户取消
   }
+  actionId.value = id
   try {
     await cancelOrder(id)
     showSuccessToast('订单已取消')
     resetAndReload()
   } catch (e) {
     // 错误提示已由 request 拦截器统一处理
+  } finally {
+    actionId.value = null
   }
 }
 </script>

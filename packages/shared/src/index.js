@@ -1,4 +1,4 @@
-export { API_SUCCESS_CODE } from './constants.js'
+export { API_SUCCESS_CODE, ORDER_STATUS, getOrderStatusText } from './constants.js'
 export { createRequest } from './request.js'
 export { createProductApi, createOrderApi, createUserApi } from './api.js'
 export { safeParse } from './storage.js'
