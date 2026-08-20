@@ -1,5 +1,4 @@
 import vue from '@vitejs/plugin-vue'
-import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import path from 'node:path'
 import { gzip, brotliCompress, constants } from 'node:zlib'
@@ -63,17 +62,18 @@ export function createManualChunks(groups = {}) {
 }
 
 /**
- * 创建共享的 Vite 基础插件数组（vue + AutoImport + Components）
+ * 创建共享的 Vite 基础插件数组（vue + Components）
+ *
+ * 不启用 unplugin-auto-import：本项目约定 vue/vue-router/pinia API 一律显式 import
+ * （与 @snackstore/eslint-config 的注释口径一致），组件仍由 unplugin-vue-components
+ * 按需解析模板中的 van-* / el-* 标签。
+ *
  * @param {Object} options
  * @param {import('unplugin-vue-components/resolvers').ComponentResolver} options.resolver UI 库解析器
  */
 export function createBasePlugins({ resolver }) {
   return [
     vue(),
-    AutoImport({
-      resolvers: [resolver],
-      imports: ['vue', 'vue-router', 'pinia']
-    }),
     Components({
       resolvers: [resolver]
     })

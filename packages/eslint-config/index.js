@@ -9,8 +9,9 @@ import skipFormatting from 'eslint-config-prettier'
  * 设计决策：
  * - flat/recommended：vue3 必备规则 + 强烈建议规则，保证模板与脚本质量
  * - eslint-config-prettier 置于末尾，关闭所有与 Prettier 冲突的格式规则
- * - 代码已全部显式 import vue API（未依赖 unplugin-auto-import 隐式全局），
- *   故无需注入 auto-import globals
+ * - 代码已全部显式 import vue API（构建层未启用 unplugin-auto-import，
+ *   见 @snackstore/vite-config），故无需注入 auto-import globals；
+ *   若出现未 import 的隐式全局，no-undef 会直接报错兜底
  *
  * @param {Object} options
  * @param {string[]} [options.ignores] 额外的忽略 glob

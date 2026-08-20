@@ -63,7 +63,7 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-// unplugin-auto-import 不会为命令式组件注入样式：el-message-box.css 自带
+// 显式 import 的命令式组件不带样式注入：el-message-box.css 自带
 // overlay 遮罩与居中规则（.is-message-box .el-overlay-message-box），缺失时
 // 确认框会失去垂直居中，必须手动引入
 import 'element-plus/theme-chalk/el-message-box.css'
