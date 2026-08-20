@@ -44,7 +44,7 @@
       layout="total, sizes, prev, pager, next, jumper"
       class="pagination"
       @current-change="load"
-      @size-change="load"
+      @size-change="onSizeChange"
     />
   </el-card>
 </template>
@@ -56,9 +56,14 @@ import { ElMessage } from 'element-plus'
 import { useTable } from '@/composables/useTable'
 
 // 分页/加载逻辑收敛到 useTable
-const { rows, loading, pageNum, pageSize, total, load } = useTable((params, signal) =>
+const { rows, loading, pageNum, pageSize, total, load, search } = useTable((params, signal) =>
   getUserList(params, signal)
 )
+
+/** 切换每页条数时回到第一页，避免 pageNum 超出总页数后停在空页 */
+function onSizeChange() {
+  search()
+}
 
 const actionId = ref(null)
 

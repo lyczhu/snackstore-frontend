@@ -94,10 +94,27 @@
           <el-input v-model="form.detail" type="textarea" :rows="4" />
         </el-form-item>
       </el-form>
+      <!-- 详情加载失败：阻断提交并提供重试，避免用空 detail 覆盖后端已有详情 -->
+      <el-alert
+        v-if="detailFailed"
+        class="detail-error"
+        type="error"
+        show-icon
+        :closable="false"
+        title="商品详情加载失败，重试成功后方可提交"
+      >
+        <el-button link type="primary" @click="loadEditDetail(editId)">重试</el-button>
+      </el-alert>
       <template #footer>
         <el-button @click="dialogVisible = false">取消</el-button>
-        <!-- 提交防重复 -->
-        <el-button type="primary" :loading="submitting" @click="submitForm">确定</el-button>
+        <!-- 提交防重复；详情未就绪/加载失败时禁用，防止空 detail 覆盖后端数据 -->
+        <el-button
+          type="primary"
+          :loading="submitting"
+          :disabled="detailLoading || detailFailed"
+          @click="submitForm"
+          >确定</el-button
+        >
       </template>
     </el-dialog>
   </el-card>
@@ -130,6 +147,7 @@ const editId = ref(null)
 const formRef = ref(null)
 const submitting = ref(false)
 const detailLoading = ref(false)
+const detailFailed = ref(false)
 const actionId = ref(null)
 
 const form = reactive({
@@ -179,6 +197,8 @@ function openDialog() {
 function showAddDialog() {
   isEdit.value = false
   editId.value = null
+  // 新增模式无详情加载，清掉编辑态残留的失败标记
+  detailFailed.value = false
   Object.assign(form, {
     name: '',
     categoryId: null,
@@ -208,9 +228,18 @@ async function editProduct(row) {
     detail: ''
   })
   openDialog()
+  loadEditDetail(row.id)
+}
+
+/**
+ * 拉取商品详情回填表单（列表行数据不含 detail）。
+ * 失败时置 detailFailed 阻断提交并提供重试，避免用空串覆盖后端已有详情
+ */
+async function loadEditDetail(id) {
   detailLoading.value = true
+  detailFailed.value = false
   try {
-    const res = await getProductDetail(row.id)
+    const res = await getProductDetail(id)
     const p = res.data
     Object.assign(form, {
       name: p.name,
@@ -222,7 +251,8 @@ async function editProduct(row) {
       detail: p.detail || ''
     })
   } catch (e) {
-    /* ignore */
+    // 错误提示已由 request 拦截器统一处理
+    detailFailed.value = true
   } finally {
     detailLoading.value = false
   }
@@ -289,5 +319,9 @@ async function handleDelete(id) {
 .pagination {
   margin-top: 16px;
   justify-content: flex-end;
+}
+
+.detail-error {
+  margin-top: 12px;
 }
 </style>
