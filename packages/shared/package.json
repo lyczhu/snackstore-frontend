@@ -11,6 +11,7 @@
   "module": "./src/index.js",
   "exports": {
     ".": "./src/index.js",
+    "./cart": "./src/cart.js",
     "./test/storage-polyfill": "./test/storage-polyfill.js",
     "./package.json": "./package.json"
   },

@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed, watch } from 'vue'
 import { useUserStore } from './user'
 import { safeParse } from '@/utils/storage'
+import { mergeCartItems, calcCentsTotal } from '@snackstore/shared'
 
 export const useCartStore = defineStore('cart', () => {
   const userStore = useUserStore()
@@ -27,17 +28,10 @@ export const useCartStore = defineStore('cart', () => {
     (newId, oldId) => {
       if (newId && !oldId) {
         // 游客 → 登录：把游客购物车合并进该账号购物车，避免加购成果丢失
+        // 合并算法收口到 @snackstore/shared，与小程序共用一份（消除双端漂移）
         const guestItems = safeParse(localStorage.getItem('cartItems_guest'), [])
         const userItems = safeParse(localStorage.getItem(`cartItems_${newId}`), [])
-        for (const g of guestItems) {
-          const exist = userItems.find((u) => u.productId === g.productId)
-          if (exist) {
-            exist.quantity += g.quantity
-          } else {
-            userItems.push(g)
-          }
-        }
-        items.value = userItems
+        items.value = mergeCartItems(guestItems, userItems)
         localStorage.removeItem('cartItems_guest')
         saveToStorage()
       } else if (!newId && oldId) {
@@ -51,15 +45,8 @@ export const useCartStore = defineStore('cart', () => {
     return items.value.reduce((sum, item) => sum + item.quantity, 0)
   })
 
-  // 金额改用「分」为整数单位累加，再换算回元，避免浮点乘法漂移
-  // （如 0.1 + 0.2 !== 0.3）。显示处统一 toFixed(2)。
-  const totalPrice = computed(() => {
-    const cents = items.value.reduce(
-      (sum, item) => sum + Math.round((item.price ?? 0) * 100) * item.quantity,
-      0
-    )
-    return cents / 100
-  })
+  // 金额累加改用 @snackstore/shared 的分单位纯函数，与小程序共用一份防浮点漂移实现
+  const totalPrice = computed(() => calcCentsTotal(items.value))
 
   function addItem(product) {
     const existing = items.value.find((item) => item.productId === product.id)
