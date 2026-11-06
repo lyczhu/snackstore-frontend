@@ -53,5 +53,5 @@ coverage/
 # AI assistant memory
 .workbuddy/
 
-# Dev Documentation
-docs/
+# SDD 执行工作区（本地 scratch，可再生）
+.superpowers/
