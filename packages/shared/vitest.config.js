@@ -6,13 +6,7 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'html'],
       include: ['src/**/*.js'],
-      exclude: [
-        '**/*.test.js',
-        'src/index.js',
-        'src/constants.js',
-        'src/storage.js',
-        'src/errorTracking.js'
-      ],
+      exclude: ['**/*.test.js', 'src/index.js', 'src/constants.js', 'src/storage.js'],
       thresholds: {
         lines: 80,
         statements: 80,

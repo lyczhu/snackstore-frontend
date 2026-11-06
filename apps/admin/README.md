@@ -49,6 +49,6 @@ pnpm preview
 
 ## 注意事项
 
-- 请求已配置代理，API 请求会自动转发到后端网关
+- API 基址默认是相对路径 `/api`：本地 `pnpm dev` / `pnpm preview` 由 Vite `server.proxy` 在**进程内**转发到 `VITE_API_TARGET`；该代理**不会进入构建产物**，线上必须由部署入口提供 `/api` 反代，并配 SPA fallback 与 `.map` 屏蔽（Nginx 参考配置见 [apps/mobile/README.md](../mobile/README.md#部署说明)，两端一致）
 - 使用 Pinia 进行状态管理
 - 路由采用按需加载（懒加载）

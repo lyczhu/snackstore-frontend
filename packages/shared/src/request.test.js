@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
 // 捕获 axios 实例上注册的拦截器，便于直接单测拦截器逻辑
 const handlers = {}
@@ -24,6 +24,8 @@ vi.mock('axios', () => ({
 }))
 
 const { createRequest } = await import('./request.js')
+// 同一份 mock 实例，用于断言 axios.create 的入参
+const { default: axios } = await import('axios')
 
 function setup(options = {}) {
   return {
@@ -38,6 +40,7 @@ beforeEach(() => {
   handlers.reqFulfilled = null
   handlers.resFulfilled = null
   handlers.resRejected = null
+  axios.create.mockClear()
 })
 
 describe('createRequest 请求拦截器', () => {
@@ -133,5 +136,35 @@ describe('createRequest 响应拦截器 - HTTP 错误', () => {
     createRequest(opts)
     await expect(handlers.resRejected(new Error('timeout'))).rejects.toBeTruthy()
     expect(opts.onError).toHaveBeenCalledWith('网络连接失败')
+  })
+})
+
+describe('createRequest baseURL 解析', () => {
+  // 优先级：显式传入 > 构建期 VITE_API_BASE_URL > 同源 '/api'
+  afterEach(() => vi.unstubAllEnvs())
+
+  it('环境变量未配置时默认同源 /api', () => {
+    createRequest(setup())
+    expect(axios.create).toHaveBeenCalledWith(expect.objectContaining({ baseURL: '/api' }))
+  })
+
+  it('构建期 VITE_API_BASE_URL 可把请求指向独立网关域名', () => {
+    vi.stubEnv('VITE_API_BASE_URL', 'https://api.example.com/api')
+    createRequest(setup())
+    expect(axios.create).toHaveBeenCalledWith(
+      expect.objectContaining({ baseURL: 'https://api.example.com/api' })
+    )
+  })
+
+  it('显式传入的 baseURL 优先于环境变量', () => {
+    vi.stubEnv('VITE_API_BASE_URL', 'https://api.example.com/api')
+    createRequest(setup({ baseURL: '/gateway' }))
+    expect(axios.create).toHaveBeenCalledWith(expect.objectContaining({ baseURL: '/gateway' }))
+  })
+
+  it("空串环境变量按未配置处理，回退 '/api'", () => {
+    vi.stubEnv('VITE_API_BASE_URL', '')
+    createRequest(setup())
+    expect(axios.create.mock.calls[0][0].baseURL).toBe('/api')
   })
 })

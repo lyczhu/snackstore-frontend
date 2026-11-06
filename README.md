@@ -60,19 +60,21 @@ pnpm dev:admin      # 仅启动后台
 
 ## 环境变量
 
-每个 app 支持 `.env.development` / `.env.production`（git 未跟踪，按需创建）：
+每个 app 支持 `.env.development` / `.env.production`（git 未跟踪，以同名的 `*.example` 为模板创建），均为构建期注入（`import.meta.env.VITE_*`），修改后需重新 build：
 
-| 变量              | 说明                                 | 默认                    |
-| ----------------- | ------------------------------------ | ----------------------- |
-| `VITE_API_TARGET` | 后端 API 地址（开发/生产可分别配置） | `http://localhost:8080` |
+| 变量                    | 说明                                                                       | 默认                    |
+| ----------------------- | -------------------------------------------------------------------------- | ----------------------- |
+| `VITE_API_TARGET`       | **仅** dev / preview 进程内 `server.proxy` 的转发目标，对构建产物无效      | `http://localhost:8080` |
+| `VITE_API_BASE_URL`     | 运行时 API 基址；缺省同源 `/api`，需由部署入口反代（或改此项指向独立网关） | `/api`                  |
+| `VITE_ERROR_REPORT_URL` | 前端错误上报端点；缺省不发网络请求，错误仅 console 输出并告警一次          | 未配置                  |
 
-生产构建默认生成 **hidden** sourcemap（产物不引用、外部不可见，配合错误监控平台上传定位线上问题）；`build:analyze` 仅产出产物构成报告，不输出完整 sourcemap。
+生产构建默认生成 **hidden** sourcemap：JS 内不写 `sourceMappingURL` 注释，但 `.map` 文件仍会输出到 `dist`，且文件名可由 chunk 名推出——**上传产物时必须剔除 `.map`**，否则源码对外可读。`build:analyze` 仅产出产物构成报告，不输出完整 sourcemap。Nginx 参考配置与逐项验证结果见 [apps/mobile/README.md](./apps/mobile/README.md#部署说明)。
 
 ## 测试
 
 测试基于 Vitest + @vue/test-utils / happy-dom，覆盖：
 
-- `packages/shared`：请求拦截器、API 常量
+- `packages/shared`：请求拦截器（含 baseURL 优先级解析）、错误上报通道与限流、API 常量
 - `apps/mobile`：`utils`（storage/orderStatus/sanitize）、`stores/cart`（账号隔离与游客合并）、`composables/usePagedList`
 - `apps/admin`：`composables/useTable`（含 AbortController 防脏写）、`stores/auth`
 
