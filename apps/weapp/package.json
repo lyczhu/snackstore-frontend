@@ -1,0 +1,22 @@
+{
+  "name": "@snackstore/weapp",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=11"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "checksize": "node scripts/checksize.mjs",
+    "upload": "node scripts/upload.mjs"
+  },
+  "dependencies": {
+    "@snackstore/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "vitest": "catalog:"
+  }
+}

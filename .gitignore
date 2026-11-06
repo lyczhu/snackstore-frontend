@@ -55,3 +55,8 @@ coverage/
 
 # SDD 执行工作区（本地 scratch，可再生）
 .superpowers/
+
+# 微信小程序：构建产物与本地私有配置（实体 env.js 保留入库，无密钥）
+apps/weapp/miniprogram/miniprogram_npm/
+apps/weapp/project.private.config.json
+apps/weapp/keys/
