@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 // 捕获 axios 实例上注册的拦截器，便于直接单测拦截器逻辑
 const handlers = {}
@@ -23,7 +23,7 @@ vi.mock('axios', () => ({
   }
 }))
 
-const { createRequest } = await import('./request.js')
+const { createRequest, interpretResponse } = await import('./request.js')
 // 同一份 mock 实例，用于断言 axios.create 的入参
 const { default: axios } = await import('axios')
 
@@ -140,31 +140,60 @@ describe('createRequest 响应拦截器 - HTTP 错误', () => {
 })
 
 describe('createRequest baseURL 解析', () => {
-  // 优先级：显式传入 > 构建期 VITE_API_BASE_URL > 同源 '/api'
-  afterEach(() => vi.unstubAllEnvs())
-
-  it('环境变量未配置时默认同源 /api', () => {
+  // 重构后 shared 不再读 import.meta.env；环境变量优先级下沉到 H5/admin 调用点。
+  // shared 层只保证：显式传入 > 默认 '/api'；空串按未配置处理。
+  it('未传入时默认同源 /api', () => {
     createRequest(setup())
     expect(axios.create).toHaveBeenCalledWith(expect.objectContaining({ baseURL: '/api' }))
   })
 
-  it('构建期 VITE_API_BASE_URL 可把请求指向独立网关域名', () => {
-    vi.stubEnv('VITE_API_BASE_URL', 'https://api.example.com/api')
-    createRequest(setup())
+  it('显式传入的 baseURL 生效', () => {
+    createRequest(setup({ baseURL: 'https://api.example.com/api' }))
     expect(axios.create).toHaveBeenCalledWith(
       expect.objectContaining({ baseURL: 'https://api.example.com/api' })
     )
   })
 
-  it('显式传入的 baseURL 优先于环境变量', () => {
-    vi.stubEnv('VITE_API_BASE_URL', 'https://api.example.com/api')
-    createRequest(setup({ baseURL: '/gateway' }))
-    expect(axios.create).toHaveBeenCalledWith(expect.objectContaining({ baseURL: '/gateway' }))
-  })
-
-  it("空串环境变量按未配置处理，回退 '/api'", () => {
-    vi.stubEnv('VITE_API_BASE_URL', '')
-    createRequest(setup())
+  it("空串 baseURL 按未配置处理，回退 '/api'", () => {
+    createRequest(setup({ baseURL: '' }))
     expect(axios.create.mock.calls[0][0].baseURL).toBe('/api')
+  })
+})
+
+describe('interpretResponse（传输层无关判定）', () => {
+  it('业务成功码 ok 并透传 data', () => {
+    expect(interpretResponse({ body: { code: 200, data: { id: 1 } } })).toEqual({
+      action: 'ok',
+      message: '',
+      data: { id: 1 }
+    })
+  })
+  it('业务失败码 → business-error，携带 message', () => {
+    const r = interpretResponse({ body: { code: 500, message: '库存不足' } })
+    expect(r.action).toBe('business-error')
+    expect(r.message).toBe('库存不足')
+  })
+  it('业务码 401 → unauthorized（非 HTTP）', () => {
+    expect(interpretResponse({ body: { code: 401, message: '过期' } }).action).toBe('unauthorized')
+  })
+  it('HTTP 401/403/500 → 对应文案', () => {
+    expect(interpretResponse({ httpStatus: 401, networkError: true }).message).toBe('登录已过期，请重新登录')
+    expect(interpretResponse({ httpStatus: 403, networkError: true }).message).toBe('没有权限访问')
+    expect(interpretResponse({ httpStatus: 500, networkError: true }).message).toBe('服务器错误')
+  })
+  it('HTTP 4xx 透传 body.message，归 network', () => {
+    const r = interpretResponse({ httpStatus: 404, body: { message: '商品不存在' }, networkError: true })
+    expect(r.action).toBe('network')
+    expect(r.message).toBe('商品不存在')
+  })
+  it('无 HTTP 状态的网络错误 → 网络连接失败', () => {
+    expect(interpretResponse({ networkError: true }).message).toBe('网络连接失败')
+  })
+  it('超时 → 请求超时文案', () => {
+    expect(interpretResponse({ timeout: true }).message).toBe('请求超时，请稍后重试')
+  })
+  it('非标准 JSON（网关错误页）→ invalid-response', () => {
+    expect(interpretResponse({ body: '<html>' }).action).toBe('invalid-response')
+    expect(interpretResponse({}).action).toBe('invalid-response')
   })
 })

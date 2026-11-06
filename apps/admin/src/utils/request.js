@@ -11,6 +11,7 @@ function handleUnauthorized() {
 }
 
 const request = createRequest({
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   timeout: 15000,
   getToken: () => useAuthStore().token,
   onUnauthorized: handleUnauthorized,
