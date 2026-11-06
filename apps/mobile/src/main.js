@@ -22,5 +22,9 @@ app.use(router)
 app.use(Lazyload) // van-image 懒加载依赖
 app.mount('#app')
 
-// 注册全局错误监听（window error / 未捕获 Promise），配合 hidden sourcemap 上报
-setupErrorTracking()
+// 注册全局错误监听（window error / 未捕获 Promise），配合 hidden sourcemap 上报。
+// 环境参数在此注入（shared 不再直读 import.meta.env）。
+setupErrorTracking({
+  isDev: import.meta.env.DEV,
+  errorReportUrl: import.meta.env.VITE_ERROR_REPORT_URL
+})

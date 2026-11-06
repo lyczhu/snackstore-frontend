@@ -25,6 +25,10 @@
 // 内置通道的限流状态：同一错误只发一次，总量封顶，防止错误风暴打爆上报端点
 const state = { seen: new Set(), sent: 0, warned: false }
 
+// 注入式通道配置（H5/小程序均可注入；缺省回退浏览器行为）
+// transport：注入发送函数（小程序传 (body)=>wx.request(...)），缺省用 sendBeacon/fetch
+const channel = { transport: null, isDev: false, errorReportUrl: undefined }
+
 const MAX_SEEN_KEYS = 50
 const MAX_SENDS = 20
 const MAX_MESSAGE_LENGTH = 500
@@ -57,6 +61,10 @@ function sendReport(endpoint, error, context) {
 
   const body = JSON.stringify(payload)
   try {
+    if (channel.transport) {
+      channel.transport(body)
+      return
+    }
     if (typeof navigator !== 'undefined' && typeof navigator.sendBeacon === 'function') {
       navigator.sendBeacon(endpoint, new Blob([body], { type: 'application/json' }))
       return
@@ -79,15 +87,20 @@ function sendReport(endpoint, error, context) {
 let reporter = null
 
 /**
- * 注入真实上报实现（生产环境调用一次即可，优先级高于内置通道）。
- * 同时重置内置通道的限流状态。
- * @param {{ reporter?: (error: unknown, context: ErrorContext) => void }} options
+ * 注入真实上报实现或通道配置。
+ * - reporter：注入即完全接管（优先级最高，DEV/PROD 均生效）
+ * - transport / isDev / errorReportUrl：内置通道的注入式环境（替代此前的 import.meta.env 直读）
+ * 传入 reporter 时同时重置内置通道限流状态。
+ * @param {{ reporter?: Function, transport?: (body: string) => void, isDev?: boolean, errorReportUrl?: string }} options
  */
 export function configureErrorTracking(options = {}) {
   if (typeof options.reporter === 'function') {
     reporter = options.reporter
     resetErrorTracking()
   }
+  if (typeof options.transport === 'function') channel.transport = options.transport
+  if (typeof options.isDev === 'boolean') channel.isDev = options.isDev
+  if (options.errorReportUrl !== undefined) channel.errorReportUrl = options.errorReportUrl
 }
 
 /** 重置内置通道的去重与限流状态（测试或需要重新计数时调用）。 */
@@ -104,11 +117,11 @@ export function reportError(error, context = {}) {
     reporter(error, context)
     return
   }
-  if (import.meta.env?.DEV) {
+  if (channel.isDev) {
     console.error('[error-tracking]', error, context)
     return
   }
-  const endpoint = import.meta.env?.VITE_ERROR_REPORT_URL
+  const endpoint = channel.errorReportUrl
   if (endpoint) {
     sendReport(endpoint, error, context)
     return
@@ -124,8 +137,9 @@ export function reportError(error, context = {}) {
   }
 }
 
-/** 注册全局错误监听（window error / unhandledrejection）。 */
-export function setupErrorTracking() {
+/** 注册全局错误监听（window error / unhandledrejection）。仅浏览器；小程序不调用。 */
+export function setupErrorTracking(options = {}) {
+  configureErrorTracking(options)
   if (typeof window === 'undefined') return
   window.addEventListener('error', (event) => {
     reportError(event.error || event.message, {
