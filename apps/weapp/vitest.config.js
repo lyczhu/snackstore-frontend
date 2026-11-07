@@ -28,6 +28,10 @@ export default defineConfig({
         replacement: fileURLToPath(new URL('../../packages/shared/src/response.js', import.meta.url))
       },
       {
+        find: '@snackstore/shared/errorTracking',
+        replacement: fileURLToPath(new URL('../../packages/shared/src/errorTracking.js', import.meta.url))
+      },
+      {
         find: '@snackstore/shared',
         replacement: fileURLToPath(new URL('../../packages/shared/src/index.js', import.meta.url))
       }

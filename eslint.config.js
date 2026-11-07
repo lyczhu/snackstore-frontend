@@ -2,7 +2,7 @@ import { createEslintConfig } from '@snackstore/eslint-config'
 
 export default [
   ...createEslintConfig({
-    ignores: ['**/.workbuddy/**', 'docs/**', 'apps/weapp/miniprogram_npm/**']
+    ignores: ['**/.workbuddy/**', 'docs/**', 'apps/weapp/**/miniprogram_npm/**']
   }),
   {
     // 小程序源码运行时全局（wx/App/Page/…），避免 no-undef 误报
