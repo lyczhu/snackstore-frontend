@@ -10,9 +10,17 @@
 }
 
 .home-banner {
+  height: 300rpx;
   margin-bottom: 32rpx;
   border-radius: 16rpx;
   overflow: hidden;
+}
+
+.banner-link {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .home-banner .banner-title {

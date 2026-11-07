@@ -4,8 +4,6 @@
     "van-image": "@vant/weapp/image/index",
     "van-skeleton": "@vant/weapp/skeleton/index",
     "van-empty": "@vant/weapp/empty/index",
-    "van-swipe": "@vant/weapp/swipe/index",
-    "van-swipe-item": "@vant/weapp/swipe-item/index",
     "van-divider": "@vant/weapp/divider/index"
   }
 }

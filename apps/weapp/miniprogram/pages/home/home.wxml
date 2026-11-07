@@ -3,12 +3,23 @@
 
   <van-search value="{{keyword}}" placeholder="搜索零食" bind:change="onSearch" />
 
-  <van-swipe wx:if="{{banners.length > 0}}" class="home-banner" autoplay="3500" indicator-color="#ee0a24">
-    <van-swipe-item wx:for="{{banners}}" wx:key="id" data-id="{{item.id}}" bind:tap="goBanner">
-      <van-image src="{{item.coverImage}}" fit="cover" lazy-load />
-      <view class="banner-title">{{item.name}}</view>
-    </van-swipe-item>
-  </van-swipe>
+  <swiper
+    wx:if="{{banners.length > 0}}"
+    class="home-banner"
+    autoplay="{{true}}"
+    interval="{{3500}}"
+    circular="{{true}}"
+    indicator-dots
+    indicator-color="rgba(255, 255, 255, 0.4)"
+    indicator-active-color="#ee0a24"
+  >
+    <swiper-item wx:for="{{banners}}" wx:key="id" data-id="{{item.id}}" bind:tap="goBanner">
+      <view class="banner-link">
+        <van-image src="{{item.coverImage}}" width="100%" height="100%" fit="cover" lazy-load />
+        <view class="banner-title">{{item.name}}</view>
+      </view>
+    </swiper-item>
+  </swiper>
 
   <view class="category-section" wx:if="{{categories.length > 0}}">
     <view class="sec-h">商品分类</view>
