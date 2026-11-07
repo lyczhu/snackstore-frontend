@@ -1,1 +1,52 @@
-<view class="ph">占位页：product-detail（待实现）</view>
+<view class="detail-page">
+  <van-skeleton wx:if="{{loading}}" title row="8" custom-class="detail-skeleton" />
+
+  <!-- 详情加载失败：错误占位 + 重试/返回，不静默空白（对齐 H5） -->
+  <van-empty wx:elif="{{loadError}}" image="error" description="商品加载失败">
+    <van-button round type="primary" size="small" custom-class="retry-btn" bind:click="load">
+      重试
+    </van-button>
+    <van-button round size="small" bind:click="goBack">返回</van-button>
+  </van-empty>
+
+  <block wx:elif="{{product}}">
+    <view class="image-section">
+      <van-image src="{{product.coverImage}}" width="100%" height="720rpx" fit="cover" lazy-load />
+    </view>
+
+    <view class="info-section">
+      <view class="price">¥{{product.price}}</view>
+      <view class="name">{{product.name}}</view>
+      <view wx:if="{{product.categoryName}}" class="meta">分类: {{product.categoryName}}</view>
+      <view class="meta">库存: {{product.stock}}</view>
+      <view wx:if="{{product.description}}" class="description">{{product.description}}</view>
+    </view>
+
+    <!-- rich-text 直接渲染 HTML 字符串（spec D5） -->
+    <view wx:if="{{detailHtml}}" class="detail-section">
+      <rich-text nodes="{{detailHtml}}" />
+    </view>
+
+    <view class="submit-bar">
+      <van-button
+        class="action-btn"
+        plain
+        type="primary"
+        size="large"
+        disabled="{{offShelf}}"
+        bind:click="onAddCart"
+      >
+        加入购物车
+      </van-button>
+      <van-button
+        class="action-btn action-btn--last"
+        type="primary"
+        size="large"
+        disabled="{{offShelf}}"
+        bind:click="onBuyNow"
+      >
+        {{offShelf ? '已下架' : '立即购买'}}
+      </van-button>
+    </view>
+  </block>
+</view>

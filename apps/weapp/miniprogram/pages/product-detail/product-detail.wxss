@@ -1,1 +1,71 @@
-.ph { padding: 32rpx; color: #969799; }
+.detail-page {
+  /* 为 fixed 底部操作栏预留空间（对齐 H5 的 90px + safe-area） */
+  padding-bottom: calc(180rpx + env(safe-area-inset-bottom));
+}
+
+.detail-skeleton {
+  padding: 48rpx 32rpx;
+  background: #fff;
+}
+
+.retry-btn {
+  margin-right: 24rpx;
+}
+
+.info-section {
+  padding: 32rpx;
+  background: #fff;
+}
+
+.info-section .price {
+  margin-bottom: 16rpx;
+  font-size: 48rpx;
+  font-weight: bold;
+  color: var(--color-primary);
+}
+
+.info-section .name {
+  margin-bottom: 16rpx;
+  font-size: 36rpx;
+  color: var(--color-text);
+}
+
+.info-section .meta {
+  margin-bottom: 8rpx;
+  font-size: 26rpx;
+  color: var(--color-text-placeholder);
+}
+
+.info-section .description {
+  margin-top: 16rpx;
+  font-size: 28rpx;
+  color: var(--color-text-secondary);
+}
+
+.detail-section {
+  margin-top: 24rpx;
+  padding: 32rpx;
+  background: #fff;
+  overflow: hidden;
+}
+
+.submit-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  padding: 16rpx 32rpx;
+  padding-bottom: calc(16rpx + env(safe-area-inset-bottom));
+  background: #fff;
+  box-shadow: var(--shadow-bar);
+}
+
+.action-btn {
+  flex: 1;
+}
+
+.action-btn--last {
+  margin-left: 24rpx;
+}
