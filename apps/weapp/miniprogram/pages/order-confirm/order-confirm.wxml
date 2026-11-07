@@ -1,1 +1,65 @@
-<view class="ph">占位页：order-confirm（待实现）</view>
+<view class="order-confirm">
+  <block wx:if="{{items.length > 0}}">
+    <!-- 地址区：加载失败可重试 / 已有地址可切换 / 无地址去新增（对齐 OrderConfirm.vue） -->
+    <view wx:if="{{addressError}}" class="address-section" hover-class="address-section--hover" bind:tap="retryAddresses">
+      <view class="address-tip">地址加载失败，点击重试</view>
+      <van-icon name="replay" size="32rpx" color="#767676" />
+    </view>
+    <view wx:elif="{{address}}" class="address-section" hover-class="address-section--hover" bind:tap="openPicker">
+      <view class="address-info">
+        <view class="receiver">{{address.receiverName}} {{address.receiverPhone}}</view>
+        <view class="addr">{{address.province}}{{address.city}}{{address.district}}{{address.detail}}</view>
+      </view>
+      <van-icon name="arrow" size="32rpx" color="#767676" />
+    </view>
+    <view wx:else class="address-section" hover-class="address-section--hover" bind:tap="goAddAddress">
+      <view class="address-tip">请添加收货地址</view>
+      <van-icon name="arrow" size="32rpx" color="#767676" />
+    </view>
+
+    <!-- 结算列表按来源计算（购物车 or 直购快照） -->
+    <view class="items-section">
+      <order-goods-item
+        wx:for="{{items}}"
+        wx:key="productId"
+        image="{{item.coverImage}}"
+        name="{{item.name}}"
+        price="{{item.price}}"
+        quantity="{{item.quantity}}"
+      />
+    </view>
+
+    <view class="total-section">
+      <text>合计: </text>
+      <text class="total-price">¥{{total}}</text>
+    </view>
+
+    <view class="submit-bar">
+      <van-button block round type="primary" size="large" loading="{{loading}}" bind:click="submitOrder">
+        提交订单
+      </van-button>
+    </view>
+  </block>
+
+  <van-empty wx:else description="暂无待结算商品">
+    <van-button round type="primary" size="small" bind:click="goHome">去逛逛</van-button>
+  </van-empty>
+
+  <!-- 地址选择：底部弹层（替代对话框，移动端标准交互） -->
+  <van-popup show="{{showPicker}}" position="bottom" round bind:close="closePicker">
+    <view class="address-picker">
+      <view class="picker-title">选择收货地址</view>
+      <view
+        wx:for="{{addresses}}"
+        wx:key="id"
+        class="address-option {{address && address.id === item.id ? 'active' : ''}}"
+        data-id="{{item.id}}"
+        bind:tap="selectAddress"
+      >
+        <view class="option-receiver">{{item.receiverName}} {{item.receiverPhone}}</view>
+        <view class="option-detail">{{item.province}}{{item.city}}{{item.district}}{{item.detail}}</view>
+      </view>
+      <van-empty wx:if="{{addresses.length === 0}}" description="暂无收货地址" />
+    </view>
+  </van-popup>
+</view>

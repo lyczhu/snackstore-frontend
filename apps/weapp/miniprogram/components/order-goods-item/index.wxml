@@ -1,0 +1,15 @@
+<view class="goods-item">
+  <van-image
+    src="{{image}}"
+    width="{{imageSize}}"
+    height="{{imageSize}}"
+    radius="8"
+    fit="cover"
+    lazy-load
+    custom-class="item-image"
+  />
+  <view class="item-info">
+    <view class="name">{{name}}</view>
+    <view class="price">¥{{price}} × {{quantity}}</view>
+  </view>
+</view>
