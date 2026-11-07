@@ -12,6 +12,9 @@
   "exports": {
     ".": "./src/index.js",
     "./cart": "./src/cart.js",
+    "./storage": "./src/storage.js",
+    "./constants": "./src/constants.js",
+    "./response": "./src/response.js",
     "./test/storage-polyfill": "./test/storage-polyfill.js",
     "./package.json": "./package.json"
   },
