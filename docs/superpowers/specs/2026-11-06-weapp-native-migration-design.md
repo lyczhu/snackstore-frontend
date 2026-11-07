@@ -180,7 +180,7 @@ apps/weapp/
 
 ### 3.4 tabBar 图标
 
-原生 tabBar 需 PNG（81×81），4 tab × 2 态 = 8 张放 `miniprogram/images/tabbar/`。实施期用最简图形占位，README 标注待设计替换。
+原生 tabBar 需 PNG（81×81），4 tab × 2 态 = 8 张放 `miniprogram/images/tabbar/`。**已落地**：图标取自 Tabler 图标集（MIT，经 Iconify API 获取），按 `#7d7e80`（常态）/`#e55a2b`（选中）双色栅格化为 81×81 PNG（每张 <2 KB）。如需替换为品牌设计稿，按同名覆盖 `images/tabbar/{home,category,cart,mine}{,-active}.png` 即可，无需改 `app.json`。
 
 ---
 
@@ -274,5 +274,5 @@ apps/weapp/
 | §3.2 order-confirm：地址 radio + 备注 + 模拟支付 | 地址走底部弹层选择、无备注字段；提交只建单，支付在订单列表/详情做；payload 传 `receiverName/Phone/Address` 文本快照而非 `addressId` | 与 `OrderConfirm.vue` 逐字对齐（幂等键 `Idempotency-Key` 与提交后去向 `/order/list` 也照 H5） |
 | §3.2 login：register 切换 | 同一表单上「登录/注册」两个按钮（非 `mode` 路由切换）；校验在页面层实现 | H5 即如此；且 `@vant/weapp` **没有 `form` 组件、`field` 也没有 `rules`/`checkValidity`**，只能页面层实现，规则与 H5 逐条一致，错误文案走 `error-message` |
 | （新增）需登录的 tab 页拦截时机 | 购物车只在 `onLoad` 拦一次，不在 `onShow` 自动拦 | tab 页无法被 `replace`，若每次 `onShow` 自动跳登录，从登录页返回后会立即再次 push 形成循环；`goCheckout` 仍做登录兜底校验 |
-| §3.4 tabBar 图标 | 仍为**纯文本占位**（未达成项） | 仓库内无设计稿资源；已列入上线清单的提审前 checklist |
+| §3.4 tabBar 图标 | 已落地：Tabler（MIT）经 Iconify 取 SVG → 81×81 双色 PNG（8 张，`miniprogram/images/tabbar/`），`app.json` 填 `iconPath`/`selectedIconPath` | 仓库无自有设计稿，先用开源图标集补齐以满足提审；如需品牌定制，同名覆盖 PNG 即可，无需改配置 |
 

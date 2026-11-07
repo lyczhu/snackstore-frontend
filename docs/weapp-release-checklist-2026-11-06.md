@@ -32,8 +32,8 @@ iOS + Android 各跑一轮主流微信版本，逐条打钩。后端用真实环
 - [ ] 小程序后台「开发设置 → 服务器域名」录入 request（及 downloadFile，若启用）合法域名。
       `urlCheck: false` 只允许出现在本地 `project.config.json`，线上必须靠白名单放行。
 - [ ] `pnpm --filter @snackstore/weapp checksize` 达标：主包 ≤ 1.8 MB；越线启用 spec §4.3 分包预案。
-- [ ] tabBar 图标按正式设计稿补齐，并在 `app.json` 填入 `iconPath` / `selectedIconPath`
-      （当前为**纯文本占位**，spec §3.4 的未达成项）。
+- [x] tabBar 图标已接入：Tabler（MIT）经 Iconify 的 81×81 双色 PNG，`app.json` 已填 `iconPath` / `selectedIconPath`。
+      如需品牌设计稿，同名覆盖 `miniprogram/images/tabbar/*.png` 即可，无需改配置。
 - [ ] 服务类目与主体资质自查；隐私保护指引已在后台配置。
 - [ ] `WX_APPID` 与 `keys/private.<appid>.key` 就位后跑 `upload`，体验版真机扫码验证通过再提审。
 - [ ] 确认本版口径对外描述正确：登录为手机号+密码、支付为模拟支付（spec D1），

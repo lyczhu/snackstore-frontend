@@ -48,7 +48,7 @@ apps/weapp
 
 与 H5 的差异（平台所致，不是功能缺失）：
 
-- **tabBar 是纯文本**，没有图标；提审前需补设计稿并填 `iconPath`。
+- **tabBar 图标**取自开源 Tabler 图标集（MIT，经 Iconify 获取）的 81×81 双色 PNG；如需换成设计稿，同名覆盖 `miniprogram/images/tabbar/*.png` 即可。
 - 表单校验在页面层实现（Vant Weapp 无 `form` 组件、`field` 无 `rules`），规则与 H5 逐条一致。
 - 轮播用原生 `swiper`（Vant Weapp 无 `swipe`）。
 - 登录为手机号+密码、支付为模拟支付，与 H5 同口径；`wx.login` 与 JSAPI 支付不在本版。
