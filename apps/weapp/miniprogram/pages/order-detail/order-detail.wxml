@@ -1,1 +1,64 @@
-<view class="ph">占位页：order-detail（待实现）</view>
+<view class="order-detail-page">
+  <van-skeleton wx:if="{{loading}}" title row="8" custom-class="detail-skeleton" />
+
+  <van-empty wx:elif="{{loadError}}" image="error" description="订单加载失败">
+    <van-button round type="primary" size="small" custom-class="retry-btn" bind:click="loadOrder">
+      重试
+    </van-button>
+    <van-button round size="small" bind:click="goBack">返回</van-button>
+  </van-empty>
+
+  <block wx:elif="{{order}}">
+    <view class="status-bar">
+      <van-tag type="{{statusType}}" size="large">{{statusText}}</van-tag>
+    </view>
+
+    <view class="address-info">
+      <view class="receiver">{{order.receiverName}} {{order.receiverPhone}}</view>
+      <view class="address">{{order.receiverAddress}}</view>
+    </view>
+
+    <view class="items-section">
+      <order-goods-item
+        wx:for="{{order.items}}"
+        wx:key="id"
+        image="{{item.productImage}}"
+        name="{{item.productName}}"
+        price="{{item.productPrice}}"
+        quantity="{{item.quantity}}"
+      />
+    </view>
+
+    <view class="info-section">
+      <view class="info-line">订单号: {{order.orderNo}}</view>
+      <view class="info-line">下单时间: {{order.createdAt}}</view>
+      <view wx:if="{{order.payTime}}" class="info-line">支付时间: {{order.payTime}}</view>
+      <view class="total">
+        <text>合计: </text>
+        <text class="total-price">¥{{order.totalAmount}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{order.status === 0}}" class="submit-bar">
+      <van-button
+        class="action-btn"
+        plain
+        type="danger"
+        size="large"
+        loading="{{actionLoading}}"
+        bind:click="handleCancel"
+      >
+        取消订单
+      </van-button>
+      <van-button
+        class="action-btn action-btn--last"
+        type="primary"
+        size="large"
+        loading="{{actionLoading}}"
+        bind:click="handlePay"
+      >
+        模拟支付
+      </van-button>
+    </view>
+  </block>
+</view>

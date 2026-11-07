@@ -1,1 +1,70 @@
-<view class="ph">占位页：order-list（待实现）</view>
+<view class="order-list">
+  <van-tabs active="{{activeTab}}" bind:change="onTabChange" color="#e55a2b">
+    <van-tab title="全部" name="all" />
+    <van-tab title="待支付" name="pending" />
+    <van-tab title="已完成" name="completed" />
+  </van-tabs>
+
+  <view wx:if="{{loadError}}" class="error-retry" bind:tap="reload">
+    <van-empty image="error" description="加载失败，点击重试" />
+  </view>
+
+  <block wx:else>
+    <van-skeleton wx:if="{{initialLoading}}" title row="6" />
+    <view wx:else class="orders">
+      <!-- 卡片内含支付/取消按钮，不能整体嵌套链接，故卡片用 view + tap，按钮用 catch:tap -->
+      <view
+        wx:for="{{orders}}"
+        wx:key="id"
+        class="order-card"
+        hover-class="order-card--hover"
+        hover-stay-time="80"
+        data-id="{{item.id}}"
+        bind:tap="goDetail"
+      >
+        <view class="order-header">
+          <text class="order-no">订单号: {{item.orderNo}}</text>
+          <van-tag type="{{item.statusType}}">{{item.statusText}}</van-tag>
+        </view>
+        <order-goods-item
+          wx:for="{{item.items}}"
+          wx:for-item="goods"
+          wx:key="id"
+          image="{{goods.productImage}}"
+          name="{{goods.productName}}"
+          price="{{goods.productPrice}}"
+          quantity="{{goods.quantity}}"
+          image-size="100rpx"
+        />
+        <view class="order-footer">
+          <text>合计: ¥{{item.totalAmount}}</text>
+          <view wx:if="{{item.status === 0}}" class="order-actions">
+            <van-button
+              type="primary"
+              size="small"
+              loading="{{actionId === item.id}}"
+              data-id="{{item.id}}"
+              catch:tap="handlePay"
+            >
+              支付
+            </van-button>
+            <van-button
+              class="action-btn--gap"
+              type="danger"
+              plain
+              size="small"
+              loading="{{actionId === item.id}}"
+              data-id="{{item.id}}"
+              catch:tap="handleCancel"
+            >
+              取消
+            </van-button>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <van-divider wx:if="{{finished && orders.length > 0}}" contentPosition="center">没有更多了</van-divider>
+    <van-empty wx:if="{{!initialLoading && !loading && orders.length === 0}}" description="暂无订单" />
+  </block>
+</view>
