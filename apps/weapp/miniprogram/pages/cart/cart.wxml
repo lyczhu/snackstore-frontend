@@ -1,1 +1,39 @@
-<view class="ph">占位页：cart（待实现）</view>
+<view class="cart-page">
+  <view class="page-main-title">购物车</view>
+
+  <view wx:if="{{items.length > 0}}" class="cart-list">
+    <view wx:for="{{items}}" wx:key="productId" class="cart-item">
+      <view class="item-link" data-id="{{item.productId}}" bind:tap="goDetail">
+        <van-image src="{{item.coverImage}}" width="160rpx" height="160rpx" fit="cover" lazy-load />
+      </view>
+      <view class="item-info">
+        <view class="name">{{item.name}}</view>
+        <view class="price">¥{{item.price}}</view>
+        <van-stepper
+          value="{{item.quantity}}"
+          min="1"
+          button-size="72rpx"
+          data-id="{{item.productId}}"
+          bind:change="onStepperChange"
+        />
+      </view>
+      <van-button
+        class="remove-btn"
+        type="danger"
+        plain
+        icon="delete-o"
+        data-id="{{item.productId}}"
+        bind:tap="onRemove"
+      />
+    </view>
+  </view>
+
+  <van-empty wx:else description="购物车是空的">
+    <van-button round type="primary" size="small" bind:tap="goHome">去逛逛</van-button>
+  </van-empty>
+
+  <view wx:if="{{items.length > 0}}" class="submit-bar">
+    <view class="total">合计: <text class="total-price">¥{{totalPrice}}</text></view>
+    <van-button type="primary" round bind:tap="goCheckout">去结算 ({{totalCount}})</van-button>
+  </view>
+</view>
