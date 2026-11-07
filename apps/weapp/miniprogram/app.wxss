@@ -1,0 +1,6 @@
+/* 全局样式：设计 token 由 P6（Task 25）落地；此处仅基础重置 */
+page {
+  background: #f7f8fa;
+  color: #323233;
+  font-size: 28rpx;
+}

@@ -1,4 +1,4 @@
-import { getOrderStatusText } from '@snackstore/shared'
+import { getOrderStatusText } from '@snackstore/shared/constants'
 
 // 状态文案走 shared（后端契约，两端共用）
 export const getStatusText = getOrderStatusText

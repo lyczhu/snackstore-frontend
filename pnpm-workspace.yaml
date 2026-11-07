@@ -13,6 +13,10 @@ onlyBuiltDependencies:
 
 allowBuilds:
   '@parcel/watcher': true
+  '@swc/core': set this to true or false
+  core-js: set this to true or false
+  less: set this to true or false
+  protobufjs: set this to true or false
   simple-git-hooks: true
 
 catalog:
@@ -41,6 +45,9 @@ catalog:
   rollup-plugin-visualizer: ^7.0.1
   size-limit: ^12.1.0
   '@size-limit/file': ^12.1.0
+  # 微信小程序（apps/weapp）
+  '@vant/weapp': ^1.11.6
+  miniprogram-ci: ^2.1.31
 
 # 供应策略：minimumReleaseAge 要求依赖发布满一定时长，lint-staged 属已知可信工具，
 # 发布较新，按策略豁免（与全局 minimumReleaseAge 配套，勿删）

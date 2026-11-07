@@ -10,10 +10,27 @@ export default defineConfig({
     environment: 'node',
     setupFiles: [fileURLToPath(new URL('./test/wx-mock.js', import.meta.url))],
     include: ['miniprogram/**/*.test.js'],
-    alias: {
-      '@snackstore/shared': fileURLToPath(
-        new URL('../../packages/shared/src/index.js', import.meta.url)
-      )
-    }
+    alias: [
+      {
+        find: '@snackstore/shared/cart',
+        replacement: fileURLToPath(new URL('../../packages/shared/src/cart.js', import.meta.url))
+      },
+      {
+        find: '@snackstore/shared/storage',
+        replacement: fileURLToPath(new URL('../../packages/shared/src/storage.js', import.meta.url))
+      },
+      {
+        find: '@snackstore/shared/constants',
+        replacement: fileURLToPath(new URL('../../packages/shared/src/constants.js', import.meta.url))
+      },
+      {
+        find: '@snackstore/shared/response',
+        replacement: fileURLToPath(new URL('../../packages/shared/src/response.js', import.meta.url))
+      },
+      {
+        find: '@snackstore/shared',
+        replacement: fileURLToPath(new URL('../../packages/shared/src/index.js', import.meta.url))
+      }
+    ]
   }
 })

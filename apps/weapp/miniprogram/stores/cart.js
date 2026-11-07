@@ -1,5 +1,6 @@
 import { createStore } from '../utils/store.js'
-import { safeParse, mergeCartItems, calcCentsTotal } from '@snackstore/shared'
+import { mergeCartItems, calcCentsTotal } from '@snackstore/shared/cart'
+import { safeParse } from '@snackstore/shared/storage'
 import { userStore, registerCartHooks } from './user.js'
 
 // 购物车按账号隔离存储；游客用 guest 命名空间（键语义对齐 H5 cartItems_{id|guest}）

@@ -1,0 +1,5 @@
+<view class="poc">
+  <view class="row">shared 纯函数合计：{{pureTotal}} 元（期望 0.30）</view>
+  <view class="row">store 购物车：{{count}} 件 / {{total}} 元（期望 2 件 0.30）</view>
+  <van-button type="primary" bind:tap="onTap">POC-4 测试按钮</van-button>
+</view>

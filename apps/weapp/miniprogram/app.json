@@ -1,0 +1,9 @@
+{
+  "pages": ["pages/home/home"],
+  "window": {
+    "navigationBarTitleText": "零食商城",
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTextStyle": "black",
+    "backgroundTextStyle": "light"
+  }
+}

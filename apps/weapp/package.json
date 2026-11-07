@@ -10,13 +10,16 @@
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
+    "vendor:npm": "node scripts/vendor-npm.mjs",
     "checksize": "node scripts/checksize.mjs",
     "upload": "node scripts/upload.mjs"
   },
   "dependencies": {
-    "@snackstore/shared": "workspace:*"
+    "@snackstore/shared": "workspace:*",
+    "@vant/weapp": "catalog:"
   },
   "devDependencies": {
+    "miniprogram-ci": "catalog:",
     "vitest": "catalog:"
   }
 }

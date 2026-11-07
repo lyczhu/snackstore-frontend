@@ -1,4 +1,4 @@
-import { interpretResponse } from '@snackstore/shared'
+import { interpretResponse } from '@snackstore/shared/response'
 import env from '../config/env.js'
 
 /** 绝对地址 + path + query 拼装；undefined/null 参数剔除 */

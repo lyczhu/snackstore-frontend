@@ -1,5 +1,5 @@
 import { createStore } from '../utils/store.js'
-import { safeParse } from '@snackstore/shared'
+import { safeParse } from '@snackstore/shared/storage'
 
 // 用户态唯一数据源（token / userInfo），wx.storage 仅作持久化层（对齐 H5「守卫不直读 storage」）
 export const userStore = createStore({ token: '', userInfo: null })
