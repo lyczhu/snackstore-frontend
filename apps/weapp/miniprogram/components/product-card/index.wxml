@@ -1,0 +1,19 @@
+<view
+  class="product-card mode-{{mode}}"
+  hover-class="product-card--hover"
+  hover-stay-time="80"
+  bind:tap="goDetail"
+>
+  <van-image
+    src="{{product.coverImage}}"
+    width="{{mode === 'list' ? '240rpx' : '100%'}}"
+    height="{{mode === 'list' ? '240rpx' : '320rpx'}}"
+    fit="cover"
+    lazy-load
+  />
+  <view class="card-info">
+    <view class="name">{{product.name}}</view>
+    <view wx:if="{{mode === 'list' && product.description}}" class="desc">{{product.description}}</view>
+    <view class="price">¥{{product.price}}</view>
+  </view>
+</view>

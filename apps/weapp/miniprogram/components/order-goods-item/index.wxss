@@ -1,12 +1,15 @@
+/* 宿主节点默认可能是 inline，显式块级化以保证页面侧 width/margin 生效 */
+:host {
+  display: block;
+}
+
 .goods-item {
   display: flex;
   align-items: center;
   padding: 16rpx 0;
+  /* 不用 :last-child 去线：组件根节点在自身作用域里恒为唯一子节点，
+     那条规则会把所有条目都判为 last，反而分隔线全部消失 */
   border-bottom: 2rpx solid var(--color-border);
-}
-
-.goods-item:last-child {
-  border-bottom: none;
 }
 
 .item-image {

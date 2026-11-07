@@ -69,9 +69,5 @@ Page({
     if (!this.list.finished && !this.list.loading && this.data.currentCategoryId) {
       this.list.onLoad().then(() => this.sync())
     }
-  },
-
-  goDetail(e) {
-    wx.navigateTo({ url: '/pages/product-detail/product-detail?id=' + e.currentTarget.dataset.id })
   }
 })

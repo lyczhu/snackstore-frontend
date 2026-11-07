@@ -5,6 +5,7 @@
     "van-icon": "@vant/weapp/icon/index",
     "van-empty": "@vant/weapp/empty/index",
     "van-popup": "@vant/weapp/popup/index",
-    "order-goods-item": "../../components/order-goods-item/index"
+    "order-goods-item": "../../components/order-goods-item/index",
+    "submit-bar": "../../components/submit-bar/index"
   }
 }

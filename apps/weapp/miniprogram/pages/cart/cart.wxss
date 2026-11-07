@@ -49,17 +49,11 @@
   flex-shrink: 0;
 }
 
-.submit-bar {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
+/* 吸底容器由 components/submit-bar 提供，页面只负责插槽内容排版 */
+.bar-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16rpx 32rpx;
-  background: #fff;
-  box-shadow: 0 -2rpx 12rpx rgba(0, 0, 0, 0.06);
 }
 
 .total {

@@ -1,8 +1,10 @@
 {
+  "navigationBarTitleText": "购物车",
   "usingComponents": {
     "van-image": "@vant/weapp/image/index",
     "van-stepper": "@vant/weapp/stepper/index",
     "van-button": "@vant/weapp/button/index",
-    "van-empty": "@vant/weapp/empty/index"
+    "van-empty": "@vant/weapp/empty/index",
+    "submit-bar": "../../components/submit-bar/index"
   }
 }

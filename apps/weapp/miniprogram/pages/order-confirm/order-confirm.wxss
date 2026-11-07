@@ -55,16 +55,7 @@
   color: var(--color-primary);
 }
 
-.submit-bar {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding: 16rpx 32rpx;
-  padding-bottom: calc(16rpx + env(safe-area-inset-bottom));
-  background: #fff;
-  box-shadow: var(--shadow-bar);
-}
+/* 吸底容器由 components/submit-bar 提供 */
 
 .address-picker {
   max-height: 70vh;

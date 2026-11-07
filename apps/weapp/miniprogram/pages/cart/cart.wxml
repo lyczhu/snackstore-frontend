@@ -32,8 +32,10 @@
     <van-button round type="primary" size="small" bind:tap="goHome">去逛逛</van-button>
   </van-empty>
 
-  <view wx:if="{{items.length > 0}}" class="submit-bar">
-    <view class="total">合计: <text class="total-price">¥{{totalPrice}}</text></view>
-    <van-button type="primary" round bind:tap="goCheckout">去结算 ({{totalCount}})</van-button>
-  </view>
+  <submit-bar wx:if="{{items.length > 0}}">
+    <view class="bar-inner">
+      <view class="total">合计: <text class="total-price">¥{{totalPrice}}</text></view>
+      <van-button type="primary" round bind:tap="goCheckout">去结算 ({{totalCount}})</van-button>
+    </view>
+  </submit-bar>
 </view>

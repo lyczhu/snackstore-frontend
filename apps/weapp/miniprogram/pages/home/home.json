@@ -4,6 +4,7 @@
     "van-image": "@vant/weapp/image/index",
     "van-skeleton": "@vant/weapp/skeleton/index",
     "van-empty": "@vant/weapp/empty/index",
-    "van-divider": "@vant/weapp/divider/index"
+    "van-divider": "@vant/weapp/divider/index",
+    "product-card": "../../components/product-card/index"
   }
 }

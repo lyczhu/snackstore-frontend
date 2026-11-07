@@ -34,11 +34,11 @@
       <text class="total-price">¥{{total}}</text>
     </view>
 
-    <view class="submit-bar">
+    <submit-bar>
       <van-button block round type="primary" size="large" loading="{{loading}}" bind:click="submitOrder">
         提交订单
       </van-button>
-    </view>
+    </submit-bar>
   </block>
 
   <van-empty wx:else description="暂无待结算商品">

@@ -56,6 +56,23 @@ pnpm --filter @snackstore/weapp run vendor:npm
 pnpm --filter @snackstore/weapp test
 ```
 
+### 组件层为何没有冒烟用例
+
+`components/` 下的三个自建组件**未**接 `miniprogram-simulate`：该库需要 jsdom 环境，
+与本工程逻辑层用的 node 环境 vitest 冲突，得再加一套独立运行时配置，收益不抵成本。
+
+因此组件正确性走两条更便宜的路径：
+
+1. **开发者工具「普通编译」**：能编译过就证明 `usingComponents` 路径、properties 名与
+   wxml 绑定成立（这一步真实抓过 `@vant/weapp` 无 `swipe` 组件导致的整包启动失败）。
+2. **页面走查**：即下方「真机回归矩阵」，覆盖插槽内容与样式在真实页面上的渲染。
+
+_附带两个小程序组件写法（本次实现已按此处理）：组件根节点在自身作用域里恒为唯一子节点，
+用 `:last-child` 去分隔线会反向失效（所有条目都判为 last）；宿主节点默认不保证是块级，
+需要页面侧排版时用 `:host { display: block }` 显式声明。_
+
+后续若组件分支逻辑多到值得投入，再单独开一个 jsdom project 补冒烟用例。
+
 ## 上传体验版与体积门禁
 
 ```bash

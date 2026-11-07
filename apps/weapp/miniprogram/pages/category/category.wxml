@@ -18,14 +18,13 @@
   <block wx:else>
     <van-skeleton wx:if="{{initialLoading}}" title row="6" />
     <view wx:else class="product-list">
-      <view wx:for="{{items}}" wx:key="id" class="product-item" data-id="{{item.id}}" bind:tap="goDetail">
-        <van-image src="{{item.coverImage}}" width="200rpx" height="200rpx" fit="cover" lazy-load />
-        <view class="pi-info">
-          <view class="pi-name">{{item.name}}</view>
-          <view class="pi-desc">{{item.description}}</view>
-          <view class="pi-price">¥{{item.price}}</view>
-        </view>
-      </view>
+      <product-card
+        class="list-item"
+        wx:for="{{items}}"
+        wx:key="id"
+        product="{{item}}"
+        mode="list"
+      />
     </view>
 
     <van-divider wx:if="{{finished && items.length > 0}}" contentPosition="center">没有更多了</van-divider>

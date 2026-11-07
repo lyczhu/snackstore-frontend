@@ -4,6 +4,7 @@
     "van-button": "@vant/weapp/button/index",
     "van-image": "@vant/weapp/image/index",
     "van-skeleton": "@vant/weapp/skeleton/index",
-    "van-empty": "@vant/weapp/empty/index"
+    "van-empty": "@vant/weapp/empty/index",
+    "submit-bar": "../../components/submit-bar/index"
   }
 }

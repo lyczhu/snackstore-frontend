@@ -1,0 +1,60 @@
+:host {
+  /* 宿主节点块级化，页面侧的 width/margin 排版才能生效 */
+  display: block;
+}
+
+.product-card {
+  display: block;
+  overflow: hidden;
+  background: #fff;
+  border-radius: var(--radius-card);
+}
+
+.product-card--hover {
+  /* 移动端按压反馈替代 hover 浮起（对齐 H5 :active） */
+  transform: scale(0.97);
+}
+
+.mode-grid .card-info {
+  padding: 16rpx 24rpx;
+}
+
+.mode-list {
+  display: flex;
+}
+
+.mode-list .card-info {
+  flex: 1;
+  min-width: 0;
+  padding: 24rpx;
+}
+
+.name {
+  font-size: 28rpx;
+  color: var(--color-text);
+  /* 商品名两行截断，提升信息展示量 */
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.desc {
+  margin: 8rpx 0 16rpx;
+  font-size: 24rpx;
+  color: var(--color-text-placeholder);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.price {
+  margin-top: 8rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+  color: var(--color-primary);
+}
+
+.mode-list .price {
+  font-size: 36rpx;
+}

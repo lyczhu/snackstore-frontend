@@ -27,26 +27,28 @@
       <rich-text nodes="{{detailHtml}}" />
     </view>
 
-    <view class="submit-bar">
-      <van-button
-        class="action-btn"
-        plain
-        type="primary"
-        size="large"
-        disabled="{{offShelf}}"
-        bind:click="onAddCart"
-      >
-        加入购物车
-      </van-button>
-      <van-button
-        class="action-btn action-btn--last"
-        type="primary"
-        size="large"
-        disabled="{{offShelf}}"
-        bind:click="onBuyNow"
-      >
-        {{offShelf ? '已下架' : '立即购买'}}
-      </van-button>
-    </view>
+    <submit-bar>
+      <view class="bar-inner">
+        <van-button
+          class="action-btn"
+          plain
+          type="primary"
+          size="large"
+          disabled="{{offShelf}}"
+          bind:click="onAddCart"
+        >
+          加入购物车
+        </van-button>
+        <van-button
+          class="action-btn action-btn--last"
+          type="primary"
+          size="large"
+          disabled="{{offShelf}}"
+          bind:click="onBuyNow"
+        >
+          {{offShelf ? '已下架' : '立即购买'}}
+        </van-button>
+      </view>
+    </submit-bar>
   </block>
 </view>

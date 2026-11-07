@@ -39,26 +39,28 @@
       </view>
     </view>
 
-    <view wx:if="{{order.status === 0}}" class="submit-bar">
-      <van-button
-        class="action-btn"
-        plain
-        type="danger"
-        size="large"
-        loading="{{actionLoading}}"
-        bind:click="handleCancel"
-      >
-        取消订单
-      </van-button>
-      <van-button
-        class="action-btn action-btn--last"
-        type="primary"
-        size="large"
-        loading="{{actionLoading}}"
-        bind:click="handlePay"
-      >
-        模拟支付
-      </van-button>
-    </view>
+    <submit-bar wx:if="{{order.status === 0}}">
+      <view class="bar-inner">
+        <van-button
+          class="action-btn"
+          plain
+          type="danger"
+          size="large"
+          loading="{{actionLoading}}"
+          bind:click="handleCancel"
+        >
+          取消订单
+        </van-button>
+        <van-button
+          class="action-btn action-btn--last"
+          type="primary"
+          size="large"
+          loading="{{actionLoading}}"
+          bind:click="handlePay"
+        >
+          模拟支付
+        </van-button>
+      </view>
+    </submit-bar>
   </block>
 </view>
