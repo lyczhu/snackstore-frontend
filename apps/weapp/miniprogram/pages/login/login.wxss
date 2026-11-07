@@ -1,1 +1,40 @@
-.ph { padding: 32rpx; color: #969799; }
+.login-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 40rpx;
+  /* 装饰性渐变保留原品牌橙（标题为 56rpx 粗体大字，对比度达标） */
+  background: linear-gradient(135deg, var(--color-primary-raw) 0%, var(--color-primary-light) 100%);
+}
+
+.login-card {
+  width: 100%;
+  padding: 80rpx 64rpx;
+  background: #fff;
+  border-radius: 32rpx;
+  box-shadow: 0 16rpx 64rpx rgba(0, 0, 0, 0.1);
+}
+
+.brand-title {
+  margin-bottom: 16rpx;
+  font-size: 56rpx;
+  font-weight: 600;
+  text-align: center;
+  color: var(--color-text);
+}
+
+.subtitle {
+  margin-bottom: 48rpx;
+  font-size: 28rpx;
+  text-align: center;
+  color: var(--color-text-placeholder);
+}
+
+.form-actions {
+  margin-top: 48rpx;
+}
+
+.register-btn {
+  margin-top: 24rpx;
+}

@@ -1,1 +1,49 @@
-<view class="ph">占位页：login（待实现）</view>
+<view class="login-page">
+  <view class="login-card">
+    <view class="brand-title">零食商城</view>
+    <view class="subtitle">欢迎登录</view>
+
+    <!-- 无 van-form：校验在页面层，错误文案经 error-message 内联展示 -->
+    <van-field
+      value="{{phone}}"
+      type="number"
+      maxlength="11"
+      clearable
+      left-icon="phone-o"
+      placeholder="请输入手机号"
+      error="{{!!errors.phone}}"
+      error-message="{{errors.phone}}"
+      bind:change="onPhone"
+    />
+    <van-field
+      value="{{password}}"
+      type="{{showPassword ? 'text' : 'password'}}"
+      clearable
+      left-icon="lock"
+      right-icon="{{showPassword ? 'eye-o' : 'closed-eye'}}"
+      placeholder="请输入密码"
+      error="{{!!errors.password}}"
+      error-message="{{errors.password}}"
+      bind:change="onPassword"
+      bind:click-icon="togglePassword"
+    />
+
+    <view class="form-actions">
+      <van-button block round type="primary" loading="{{loading}}" loading-text="提交中" bind:click="submit">
+        登录
+      </van-button>
+      <van-button
+        class="register-btn"
+        block
+        round
+        plain
+        type="primary"
+        loading="{{loading}}"
+        loading-text="提交中"
+        bind:click="register"
+      >
+        注册
+      </van-button>
+    </view>
+  </view>
+</view>
