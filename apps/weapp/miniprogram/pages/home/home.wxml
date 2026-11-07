@@ -1,5 +1,56 @@
-<view class="poc">
-  <view class="row">shared 纯函数合计：{{pureTotal}} 元（期望 0.30）</view>
-  <view class="row">store 购物车：{{count}} 件 / {{total}} 元（期望 2 件 0.30）</view>
-  <van-button type="primary" bind:tap="onTap">POC-4 测试按钮</van-button>
+<view class="home-page">
+  <view class="page-main-title">零食商城</view>
+
+  <van-search value="{{keyword}}" placeholder="搜索零食" bind:change="onSearch" />
+
+  <van-swipe wx:if="{{banners.length > 0}}" class="home-banner" autoplay="3500" indicator-color="#ee0a24">
+    <van-swipe-item wx:for="{{banners}}" wx:key="id" data-id="{{item.id}}" bind:tap="goBanner">
+      <van-image src="{{item.coverImage}}" fit="cover" lazy-load />
+      <view class="banner-title">{{item.name}}</view>
+    </van-swipe-item>
+  </van-swipe>
+
+  <view class="category-section" wx:if="{{categories.length > 0}}">
+    <view class="sec-h">商品分类</view>
+    <scroll-view class="category-list" scroll-x enable-flex>
+      <view
+        wx:for="{{categories}}"
+        wx:key="id"
+        class="category-tab-btn {{currentCategoryId === item.id ? 'active' : ''}}"
+        data-id="{{item.id}}"
+        bind:tap="selectCategory"
+      >{{item.name}}</view>
+    </scroll-view>
+  </view>
+
+  <view class="product-section">
+    <view class="sec-h">{{sectionTitle}}</view>
+
+    <view wx:if="{{loadError}}" class="error-retry" bind:tap="retry">
+      <van-empty image="error" description="加载失败，点击重试" />
+    </view>
+
+    <block wx:else>
+      <van-skeleton wx:if="{{initialLoading}}" title row="6" />
+      <view wx:else class="product-grid">
+        <view
+          wx:for="{{items}}"
+          wx:key="id"
+          class="product-card"
+          data-id="{{item.id}}"
+          bind:tap="goDetail"
+        >
+          <van-image src="{{item.coverImage}}" width="100%" height="320rpx" fit="cover" lazy-load />
+          <view class="pc-name">{{item.name}}</view>
+          <view class="pc-price">¥{{item.price}}</view>
+        </view>
+      </view>
+
+      <van-divider wx:if="{{finished && items.length > 0}}" contentPosition="center">没有更多了</van-divider>
+      <van-empty
+        wx:if="{{!initialLoading && !loading && items.length === 0}}"
+        description="{{keyword ? '未找到相关商品' : '暂无商品'}}"
+      />
+    </block>
+  </view>
 </view>

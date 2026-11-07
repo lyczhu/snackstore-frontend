@@ -1,7 +1,95 @@
-.poc {
+.home-page {
   padding: 32rpx;
 }
-.row {
+
+.page-main-title {
   margin-bottom: 24rpx;
+  font-size: 40rpx;
+  font-weight: 600;
   color: #323233;
+}
+
+.home-banner {
+  margin-bottom: 32rpx;
+  border-radius: 16rpx;
+  overflow: hidden;
+}
+
+.home-banner .banner-title {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 16rpx 24rpx;
+  font-size: 26rpx;
+  color: #fff;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.55));
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sec-h {
+  margin-bottom: 24rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #323233;
+}
+
+.category-section {
+  margin: 32rpx 0;
+}
+
+.category-list {
+  display: flex;
+  white-space: nowrap;
+  padding-bottom: 16rpx;
+}
+
+.category-tab-btn {
+  flex: none;
+  margin-right: 24rpx;
+  padding: 12rpx 28rpx;
+  font-size: 26rpx;
+  color: #323233;
+  background: #f7f8fa;
+  border-radius: 32rpx;
+}
+
+.category-tab-btn.active {
+  color: #fff;
+  background: #ee0a24;
+}
+
+.error-retry {
+  text-align: center;
+}
+
+.product-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.product-card {
+  width: 48.5%;
+  margin-bottom: 24rpx;
+  background: #fff;
+  border-radius: 16rpx;
+  overflow: hidden;
+}
+
+.pc-name {
+  padding: 12rpx 16rpx 0;
+  font-size: 28rpx;
+  color: #323233;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pc-price {
+  padding: 8rpx 16rpx 16rpx;
+  font-size: 30rpx;
+  color: #ee0a24;
 }
