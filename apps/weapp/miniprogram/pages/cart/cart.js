@@ -1,0 +1,1 @@
+Page({ data: { placeholder: 'cart' } })
