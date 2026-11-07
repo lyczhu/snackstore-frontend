@@ -59,4 +59,6 @@ coverage/
 # 微信小程序：构建产物与本地私有配置（实体 env.js 保留入库，无密钥）
 apps/weapp/miniprogram/miniprogram_npm/
 apps/weapp/project.private.config.json
-apps/weapp/keys/
+# 上传私钥不入库，但获取说明需要随工程分发
+apps/weapp/keys/*
+!apps/weapp/keys/README.md
