@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint-test-weapp:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      # 依赖里 @swc/core/less/protobufjs 等的原生构建脚本对本项目非必需；
+      # 关闭严格构建校验，避免 pnpm 因「ignored builds」直接失败（与本地一致）。
+      - name: Install
+        run: pnpm install --frozen-lockfile --config.strict-dep-builds=false
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Test (shared / weapp / admin / mobile)
+        run: pnpm test
+
+      # 微信小程序端：开发者工具「构建 npm」在 pnpm workspace 布局下静默空跑（POC-4），
+      # 因此 miniprogram_npm 由脚本 vendor 生成，需在流水线中显式执行。
+      - name: Vendor weapp miniprogram_npm
+        run: pnpm --filter @snackstore/weapp run vendor:npm
+
+      # 断言产物存在：依赖变更后若忘了 vendor，这里直接失败。
+      - name: Verify miniprogram_npm artifacts
+        run: |
+          set -e
+          test -d apps/weapp/miniprogram/miniprogram_npm/@vant/weapp \
+            || { echo "缺少 miniprogram_npm/@vant/weapp"; exit 1; }
+          test -f apps/weapp/miniprogram/miniprogram_npm/@vant/weapp/button/index.js \
+            || { echo "缺少 @vant/weapp/button 组件"; exit 1; }
+          test -f apps/weapp/miniprogram/miniprogram_npm/@snackstore/shared/index.js \
+            || { echo "缺少 @snackstore/shared 纯模块入口"; exit 1; }
+          echo "miniprogram_npm 产物校验通过"
