@@ -259,3 +259,20 @@ apps/weapp/
 2. 小程序 appid 与主体、服务类目资质；
 3. tabBar 图标的正式设计稿；
 4. 错误上报端点 `errorReportUrl` 是否启用（缺省不发送，与 H5 口径一致）。
+
+---
+
+## 7. 实施修订记录（2026-11-07）
+
+实施过程中与本设计表述有出入的部分，在此留痕（不重写原决议，只记偏离与理由）：
+
+| 原表述 | 实际实施 | 理由与影响面 |
+| --- | --- | --- |
+| D2 / §4.2：依赖开发者工具「构建 npm」；本地打开 `apps/weapp/miniprogram` | 改用 `scripts/vendor-npm.mjs` 生成 `miniprogram_npm`；工程根为 `apps/weapp`（`miniprogramRoot=miniprogram/`） | POC-4 实测：在本仓库的 pnpm workspace + 嵌套 app 布局下，构建 npm **静默空跑**（零产物、无打包日志），已逐一证伪 junction / `catalog:` / `workspace:` 三种成因。影响：代码走 `@snackstore/shared/<子路径>` 导入以避开 axios；`miniprogram_npm/` 不入库；CI 与上传前必须先 vendor；`ci.Project.projectPath` 指向 `apps/weapp` 而非 `miniprogram/` |
+| §4.1 第三行：`miniprogram-simulate` 跑 2 例组件冒烟 | **未引入**，降级为「开发者工具普通编译 + 页面走查」 | 该库需 jsdom，与逻辑层的 node 环境 vitest 冲突，需再加一套独立运行时；编译通过已能证明 `usingComponents` 路径与 properties/wxml 绑定成立，插槽内容渲染由回归矩阵覆盖。若后续组件分支变复杂，再单独开 jsdom project 补测 |
+| §3.2 cart：`swipe-cell` 删除 | 采用与 `Cart.vue` 一致的**可见删除按钮**，无左滑、无勾选/选择态 | 翻译基准就是实现权威：H5 购物车本来没有选择态与左滑删除，补上反而是额外行为 |
+| §3.2 order-confirm：地址 radio + 备注 + 模拟支付 | 地址走底部弹层选择、无备注字段；提交只建单，支付在订单列表/详情做；payload 传 `receiverName/Phone/Address` 文本快照而非 `addressId` | 与 `OrderConfirm.vue` 逐字对齐（幂等键 `Idempotency-Key` 与提交后去向 `/order/list` 也照 H5） |
+| §3.2 login：register 切换 | 同一表单上「登录/注册」两个按钮（非 `mode` 路由切换）；校验在页面层实现 | H5 即如此；且 `@vant/weapp` **没有 `form` 组件、`field` 也没有 `rules`/`checkValidity`**，只能页面层实现，规则与 H5 逐条一致，错误文案走 `error-message` |
+| （新增）需登录的 tab 页拦截时机 | 购物车只在 `onLoad` 拦一次，不在 `onShow` 自动拦 | tab 页无法被 `replace`，若每次 `onShow` 自动跳登录，从登录页返回后会立即再次 push 形成循环；`goCheckout` 仍做登录兜底校验 |
+| §3.4 tabBar 图标 | 仍为**纯文本占位**（未达成项） | 仓库内无设计稿资源；已列入上线清单的提审前 checklist |
+
