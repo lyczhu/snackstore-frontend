@@ -1,1 +1,55 @@
-<view class="ph">占位页：mine（待实现）</view>
+<view class="mine-page">
+  <!-- 已登录：纯展示，不可点击（对齐 Mine.vue v-if 分支） -->
+  <view wx:if="{{logged}}" class="user-card">
+    <van-image
+      round
+      width="128rpx"
+      height="128rpx"
+      src="{{user.avatar}}"
+      custom-class="user-avatar"
+    >
+      <view slot="error" class="avatar-fallback">
+        <van-icon name="user-o" size="64rpx" color="#fff" />
+      </view>
+    </van-image>
+    <view class="user-info">
+      <view class="user-name">{{user.nickname || '用户'}}</view>
+      <view class="user-phone">{{user.phone}}</view>
+    </view>
+  </view>
+
+  <!-- 未登录：点击进入登录页（对齐 Mine.vue 的 router-link 语义） -->
+  <view
+    wx:else
+    class="user-card clickable"
+    hover-class="user-card--hover"
+    hover-stay-time="120"
+    bind:tap="goLogin"
+  >
+    <view class="avatar-fallback">
+      <van-icon name="user-o" size="64rpx" color="#fff" />
+    </view>
+    <view class="user-info">
+      <view class="user-name">点击登录</view>
+    </view>
+  </view>
+
+  <view class="menu-list">
+    <view class="menu-item" hover-class="menu-item--hover" hover-stay-time="80" bind:tap="goOrders">
+      <van-icon name="orders-o" size="40rpx" color="#323233" />
+      <text class="menu-text">我的订单</text>
+      <van-icon name="arrow" class="arrow" size="32rpx" />
+    </view>
+    <view class="menu-item" hover-class="menu-item--hover" hover-stay-time="80" bind:tap="goAddress">
+      <van-icon name="location-o" size="40rpx" color="#323233" />
+      <text class="menu-text">收货地址</text>
+      <van-icon name="arrow" class="arrow" size="32rpx" />
+    </view>
+    <view wx:if="{{logged}}" class="menu-item" hover-class="menu-item--hover" hover-stay-time="80" bind:tap="onLogout">
+      <!-- 退出登录：与 H5 同用 revoke（Vant 无 log-out 图标） -->
+      <van-icon name="revoke" size="40rpx" color="#323233" />
+      <text class="menu-text">退出登录</text>
+      <van-icon name="arrow" class="arrow" size="32rpx" />
+    </view>
+  </view>
+</view>

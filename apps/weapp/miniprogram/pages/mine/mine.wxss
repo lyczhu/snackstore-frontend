@@ -1,1 +1,82 @@
-.ph { padding: 32rpx; color: #969799; }
+.mine-page {
+  padding: 32rpx;
+}
+
+.user-card {
+  display: flex;
+  align-items: center;
+  /* 装饰性渐变保留原品牌橙（标题为 36rpx 粗体大字，对比度达标） */
+  padding: 48rpx;
+  margin-bottom: 48rpx;
+  color: #fff;
+  background: linear-gradient(135deg, var(--color-primary-raw), var(--color-primary-light));
+  border-radius: 32rpx;
+}
+
+.user-card--hover {
+  /* 小程序 :active 在 view 上不可靠，按压反馈走 hover-class */
+  transform: scale(0.98);
+}
+
+.user-avatar {
+  flex-shrink: 0;
+}
+
+.avatar-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 128rpx;
+  height: 128rpx;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+}
+
+.user-info {
+  margin-left: 32rpx;
+}
+
+.user-name {
+  margin-bottom: 8rpx;
+  font-size: 36rpx;
+  font-weight: 600;
+}
+
+.user-phone {
+  font-size: 28rpx;
+  opacity: 0.9;
+}
+
+.menu-list {
+  overflow: hidden;
+  background: #fff;
+  border-radius: 24rpx;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 32rpx 40rpx;
+  border-bottom: 2rpx solid var(--color-border);
+}
+
+.menu-item:last-child {
+  border-bottom: none;
+}
+
+.menu-item--hover {
+  background: var(--color-bg);
+}
+
+.menu-text {
+  flex: 1;
+  margin-left: 24rpx;
+  font-size: 30rpx;
+  color: var(--color-text);
+}
+
+.arrow {
+  color: var(--color-text-placeholder);
+}
