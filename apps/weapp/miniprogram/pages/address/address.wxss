@@ -1,1 +1,76 @@
-.ph { padding: 32rpx; color: #969799; }
+.address-list {
+  padding: 32rpx;
+}
+
+.error-retry {
+  margin-top: 32rpx;
+}
+
+.addresses {
+  margin-top: 32rpx;
+}
+
+.address-card {
+  margin-bottom: 24rpx;
+  padding: 24rpx;
+  background: #fff;
+  border-radius: var(--radius-card);
+}
+
+.receiver {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8rpx;
+}
+
+.receiver .name {
+  margin-right: 16rpx;
+  font-size: 30rpx;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.receiver .phone {
+  margin-right: 16rpx;
+  font-size: 26rpx;
+  color: var(--color-text-secondary);
+}
+
+.detail {
+  margin-bottom: 16rpx;
+  font-size: 26rpx;
+  color: var(--color-text-secondary);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 16rpx;
+  border-top: 2rpx solid var(--color-border);
+}
+
+.action-gap {
+  margin-left: 16rpx;
+}
+
+.address-form {
+  max-height: 85vh;
+  padding: 40rpx 0 calc(32rpx + env(safe-area-inset-bottom));
+  overflow-y: auto;
+}
+
+.form-title {
+  margin-bottom: 16rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  text-align: center;
+  color: var(--color-text);
+}
+
+.form-actions {
+  padding: 32rpx;
+}
+
+.cancel-btn {
+  margin-top: 24rpx;
+}
