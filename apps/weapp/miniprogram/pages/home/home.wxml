@@ -11,7 +11,7 @@
     circular="{{true}}"
     indicator-dots
     indicator-color="rgba(255, 255, 255, 0.4)"
-    indicator-active-color="#ee0a24"
+    indicator-active-color="#e55a2b"
   >
     <swiper-item wx:for="{{banners}}" wx:key="id" data-id="{{item.id}}" bind:tap="goBanner">
       <view class="banner-link">

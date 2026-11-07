@@ -42,7 +42,7 @@
   margin: 8rpx 0 16rpx;
   font-size: 32rpx;
   font-weight: bold;
-  color: #ee0a24;
+  color: var(--color-primary);
 }
 
 .remove-btn {
@@ -70,5 +70,5 @@
 .total-price {
   font-size: 40rpx;
   font-weight: bold;
-  color: #ee0a24;
+  color: var(--color-primary);
 }

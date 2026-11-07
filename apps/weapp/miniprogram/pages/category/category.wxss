@@ -27,7 +27,7 @@
 
 .category-tab-btn.active {
   color: #fff;
-  background: #ee0a24;
+  background: var(--color-primary);
 }
 
 .product-item {
@@ -64,5 +64,5 @@
 
 .pi-price {
   font-size: 32rpx;
-  color: #ee0a24;
+  color: var(--color-primary);
 }
