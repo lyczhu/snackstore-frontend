@@ -26,7 +26,12 @@ describe('mergeCartItems', () => {
 
 describe('calcCentsTotal', () => {
   it('避免浮点漂移（0.1 + 0.2 === 0.3）', () => {
-    expect(calcCentsTotal([{ price: 0.1, quantity: 1 }, { price: 0.2, quantity: 1 }])).toBe(0.3)
+    expect(
+      calcCentsTotal([
+        { price: 0.1, quantity: 1 },
+        { price: 0.2, quantity: 1 }
+      ])
+    ).toBe(0.3)
   })
   it('price 缺省按 0', () => {
     expect(calcCentsTotal([{ quantity: 3 }])).toBe(0)

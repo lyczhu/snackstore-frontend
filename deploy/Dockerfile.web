@@ -1,0 +1,46 @@
+# syntax=docker/dockerfile:1
+
+# 前端两站点的通用镜像：Node 构建产物 → Nginx 静态承载。
+# 构建上下文必须是仓库根目录（monorepo 需要 pnpm-workspace.yaml 与 packages/*）。
+#
+#   docker build -f deploy/Dockerfile.web --build-arg APP=mobile -t snackstore-mobile .
+#   docker build -f deploy/Dockerfile.web --build-arg APP=admin  -t snackstore-admin .
+
+ARG NODE_VERSION=20
+
+FROM node:${NODE_VERSION}-alpine AS build
+
+# 目标应用：mobile | admin
+ARG APP=mobile
+
+ENV PNPM_HOME=/pnpm
+ENV PATH=$PNPM_HOME:$PATH
+RUN corepack enable
+
+WORKDIR /repo
+
+# 复制全量源码（node_modules/dist/coverage 由 .dockerignore 排除）。
+# 不拆「先拷清单再 install」的分层：pnpm workspace 的 catalog 与多 importer
+# 需要完整目录结构才能正确解析，稳妥优先。
+COPY . .
+
+# 只安装目标应用及其 workspace 依赖，跳过 weapp（miniprogram-ci 体积大且构建不需要）
+RUN pnpm install --frozen-lockfile --config.strict-dep-builds=false --filter @snackstore/${APP}...
+
+# 默认不产出 sourcemap（见各 app 的 vite.config.js），产物可直接公开部署
+RUN pnpm --filter @snackstore/${APP} build
+
+FROM nginx:1.27-alpine
+
+# 站点配置：官方镜像启动时用 envsubst 渲染 /etc/nginx/templates/*.template。
+# 该机制只替换「环境中真实存在的变量」，因此模板里的 $uri/$host/$remote_addr
+# 不会被误替换。
+COPY deploy/nginx/spa.conf.template /etc/nginx/templates/default.conf.template
+COPY --from=build /repo/apps/${APP}/dist /usr/share/nginx/html
+
+# 运行时默认值，可在 docker run -e 或 compose environment 覆盖
+ENV SERVER_NAME=_ \
+    API_UPSTREAM=http://host.docker.internal:8080 \
+    CLIENT_MAX_BODY_SIZE=10m
+
+EXPOSE 80

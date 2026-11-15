@@ -13,8 +13,13 @@ function withUserId(fn) {
 }
 
 export const getAddressList = () => withUserId((userId) => req().get(`/users/${userId}/addresses`))
-export const getAddressById = (id) => withUserId((userId) => req().get(`/users/${userId}/addresses/${id}`))
-export const postAddress = (data) => withUserId((userId) => req().post(`/users/${userId}/addresses`, data))
-export const putAddress = (id, data) => withUserId((userId) => req().put(`/users/${userId}/addresses/${id}`, data))
-export const deleteAddress = (id) => withUserId((userId) => req().del(`/users/${userId}/addresses/${id}`))
-export const setDefaultAddress = (id) => withUserId((userId) => req().patch(`/users/${userId}/addresses/${id}/default`))
+export const getAddressById = (id) =>
+  withUserId((userId) => req().get(`/users/${userId}/addresses/${id}`))
+export const postAddress = (data) =>
+  withUserId((userId) => req().post(`/users/${userId}/addresses`, data))
+export const putAddress = (id, data) =>
+  withUserId((userId) => req().put(`/users/${userId}/addresses/${id}`, data))
+export const deleteAddress = (id) =>
+  withUserId((userId) => req().del(`/users/${userId}/addresses/${id}`))
+export const setDefaultAddress = (id) =>
+  withUserId((userId) => req().patch(`/users/${userId}/addresses/${id}/default`))

@@ -25,9 +25,7 @@ if (!existsSync(privateKeyPath)) {
 
 const pkg = JSON.parse(readFileSync(path.join(root, 'package.json'), 'utf8'))
 // argv 数组形式调用，不经过 shell，避开元字符注入面
-const sha = execFileSync('git', ['rev-parse', '--short', 'HEAD'], { cwd: root })
-  .toString()
-  .trim()
+const sha = execFileSync('git', ['rev-parse', '--short', 'HEAD'], { cwd: root }).toString().trim()
 
 const project = new ci.Project({
   appid,

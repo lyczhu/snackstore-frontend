@@ -1,0 +1,55 @@
+# 前端两站点编排。后端不在本文件内，需另行启动（见 README）。
+#
+#   docker compose -f deploy/docker-compose.yml up -d --build
+#
+# 默认把 /api 反代到宿主机的 8080（后端网关端口）。
+# 后端若跑在宿主机，用 host.docker.internal；若在同一 compose 网络，改成服务名。
+
+name: snackstore-web
+
+services:
+  mobile:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.web
+      args:
+        APP: mobile
+    image: snackstore-mobile:local
+    ports:
+      - '8081:80'
+    environment:
+      SERVER_NAME: _
+      API_UPSTREAM: ${API_UPSTREAM:-http://host.docker.internal:8080}
+      CLIENT_MAX_BODY_SIZE: 10m
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -qO- http://127.0.0.1/ >/dev/null || exit 1']
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
+
+  admin:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.web
+      args:
+        APP: admin
+    image: snackstore-admin:local
+    ports:
+      - '8082:80'
+    environment:
+      SERVER_NAME: _
+      API_UPSTREAM: ${API_UPSTREAM:-http://host.docker.internal:8080}
+      CLIENT_MAX_BODY_SIZE: 10m
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -qO- http://127.0.0.1/ >/dev/null || exit 1']
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped

@@ -68,7 +68,7 @@ pnpm dev:admin      # 仅启动后台
 | `VITE_API_BASE_URL`     | 运行时 API 基址；缺省同源 `/api`，需由部署入口反代（或改此项指向独立网关） | `/api`                  |
 | `VITE_ERROR_REPORT_URL` | 前端错误上报端点；缺省不发网络请求，错误仅 console 输出并告警一次          | 未配置                  |
 
-生产构建默认生成 **hidden** sourcemap：JS 内不写 `sourceMappingURL` 注释，但 `.map` 文件仍会输出到 `dist`，且文件名可由 chunk 名推出——**上传产物时必须剔除 `.map`**，否则源码对外可读。`build:analyze` 仅产出产物构成报告，不输出完整 sourcemap。Nginx 参考配置与逐项验证结果见 [apps/mobile/README.md](./apps/mobile/README.md#部署说明)。
+生产构建**默认不输出 sourcemap**。需要排查线上问题时用 `VITE_SOURCEMAP=true pnpm build:mobile`（或 `build:admin`）单独构建：此时生成 **hidden** sourcemap（JS 内不写 `sourceMappingURL` 注释，但 `.map` 仍会写进 `dist`，文件名可由 chunk 名推出），这类产物只允许上传到错误监控平台，**禁止跟静态资源一起发布**。CI 有 `.map` 断言拦截，部署配置见 [deploy/README.md](./deploy/README.md)。`build:analyze` 仅产出产物构成报告，不输出完整 sourcemap。Nginx 配置与逐项验证结果见 [apps/mobile/README.md](./apps/mobile/README.md#部署说明)。
 
 ## 测试
 

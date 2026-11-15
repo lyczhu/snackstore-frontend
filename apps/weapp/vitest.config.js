@@ -21,15 +21,21 @@ export default defineConfig({
       },
       {
         find: '@snackstore/shared/constants',
-        replacement: fileURLToPath(new URL('../../packages/shared/src/constants.js', import.meta.url))
+        replacement: fileURLToPath(
+          new URL('../../packages/shared/src/constants.js', import.meta.url)
+        )
       },
       {
         find: '@snackstore/shared/response',
-        replacement: fileURLToPath(new URL('../../packages/shared/src/response.js', import.meta.url))
+        replacement: fileURLToPath(
+          new URL('../../packages/shared/src/response.js', import.meta.url)
+        )
       },
       {
         find: '@snackstore/shared/errorTracking',
-        replacement: fileURLToPath(new URL('../../packages/shared/src/errorTracking.js', import.meta.url))
+        replacement: fileURLToPath(
+          new URL('../../packages/shared/src/errorTracking.js', import.meta.url)
+        )
       },
       {
         find: '@snackstore/shared',

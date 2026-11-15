@@ -60,7 +60,8 @@ Page({
     if (!isLoggedIn()) {
       wx.showToast({ title: '请先登录', icon: 'none' })
       wx.navigateTo({
-        url: '/pages/login/login?redirect=' + encodeURIComponent('/pages/order-confirm/order-confirm')
+        url:
+          '/pages/login/login?redirect=' + encodeURIComponent('/pages/order-confirm/order-confirm')
       })
       return
     }

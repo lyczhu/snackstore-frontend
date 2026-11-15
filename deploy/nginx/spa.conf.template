@@ -1,0 +1,48 @@
+server {
+    listen 80;
+    server_name ${SERVER_NAME};
+
+    root /usr/share/nginx/html;
+    index index.html;
+
+    client_max_body_size ${CLIENT_MAX_BODY_SIZE};
+
+    # 复用构建期预生成的 .gz，避免运行时动态压缩占 CPU。
+    # brotli_static 需要 ngx_brotli 模块，官方 nginx 镜像未内置，启用前请确认镜像来源。
+    gzip_static on;
+
+    # 源码防泄漏：hidden sourcemap 会生成 .map 且文件名可由 chunk 名推导。
+    # 构建已默认关闭 sourcemap，这里是兜底。
+    location ~ \.map$ {
+        deny all;
+    }
+
+    # API 反代：缺失会导致所有接口 404 或返回 index.html，
+    # 前端表现为「响应格式非法」Toast。
+    # 注意 API_UPSTREAM 不带结尾斜杠，否则 /api 前缀会被截掉。
+    location /api/ {
+        proxy_pass ${API_UPSTREAM};
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 30s;
+    }
+
+    # 带内容 hash 的构建产物可长缓存
+    location /assets/ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # index.html 不缓存，否则发版后仍指向旧 chunk
+    location = /index.html {
+        add_header Cache-Control "no-cache, must-revalidate";
+    }
+
+    # SPA fallback：缺失会让深链刷新 404（如 /home、/product/1）
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}

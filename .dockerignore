@@ -1,0 +1,18 @@
+# 构建上下文排除项：镜像内会重新安装依赖与构建，宿主产物不得带入
+**/node_modules
+**/dist
+**/coverage
+
+# 版本库与工具产物
+.git
+.gitignore
+.github
+*.log
+.superpowers
+
+# 文档不参与镜像构建
+docs
+**/*.md
+
+# 本地私有环境变量（.env.production 等模板文件保留，构建期需要）
+**/.env.*.local

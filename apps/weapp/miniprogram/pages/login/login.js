@@ -3,7 +3,12 @@ import { setLogin } from '../../stores/user.js'
 import { toastSuccess } from '../../utils/toast.js'
 
 // tabBar 页只能用 switchTab 回跳（navigateTo/redirectTo 对 tab 页无效）
-const TAB_PAGES = ['/pages/home/home', '/pages/category/category', '/pages/cart/cart', '/pages/mine/mine']
+const TAB_PAGES = [
+  '/pages/home/home',
+  '/pages/category/category',
+  '/pages/cart/cart',
+  '/pages/mine/mine'
+]
 
 // @vant/weapp 没有 form 组件、field 也没有 rules，因此校验放在页面层，
 // 规则与 Login.vue 的 van-field rules 逐条对齐，错误文案经 error-message 内联展示。
@@ -20,7 +25,9 @@ Page({
   },
 
   onLoad(options) {
-    this.setData({ redirect: options && options.redirect ? decodeURIComponent(options.redirect) : '' })
+    this.setData({
+      redirect: options && options.redirect ? decodeURIComponent(options.redirect) : ''
+    })
   },
 
   onPhone(e) {
@@ -48,7 +55,12 @@ Page({
 
   submit() {
     if (this.data.loading || !this.validate()) return
-    this.send(postLogin, { phone: this.data.phone, password: this.data.password }, '登录成功', false)
+    this.send(
+      postLogin,
+      { phone: this.data.phone, password: this.data.password },
+      '登录成功',
+      false
+    )
   },
 
   // 注册按钮非 submit，需手动触发校验（对齐 Login.vue handleRegister）；

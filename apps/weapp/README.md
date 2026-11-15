@@ -33,18 +33,18 @@ apps/weapp
 
 ## 功能模块
 
-| 页面 | 对应 H5 | 能力 |
-| --- | --- | --- |
-| `pages/home` | `Home.vue` | 搜索、分类筛选、Banner、分页列表 |
-| `pages/category` | `Category.vue` | 分类切换 + 商品列表 |
-| `pages/cart` | `Cart.vue` | 改数量、删除、合计、去结算 |
-| `pages/mine` | `Mine.vue` | 用户信息、订单/地址入口、退出登录 |
-| `pages/login` | `Login.vue` | 手机号+密码登录、注册、登录后回跳原页 |
-| `pages/product-detail` | `ProductDetail.vue` | 图文详情、加购、立即购买 |
-| `pages/order-confirm` | `OrderConfirm.vue` | 选收货地址、提交订单 |
-| `pages/order-list` | `OrderList.vue` | 按状态筛选、支付/取消 |
-| `pages/order-detail` | `OrderDetail.vue` | 订单详情、支付/取消 |
-| `pages/address` | `AddressList.vue` | 地址增删改、设默认 |
+| 页面                   | 对应 H5             | 能力                                  |
+| ---------------------- | ------------------- | ------------------------------------- |
+| `pages/home`           | `Home.vue`          | 搜索、分类筛选、Banner、分页列表      |
+| `pages/category`       | `Category.vue`      | 分类切换 + 商品列表                   |
+| `pages/cart`           | `Cart.vue`          | 改数量、删除、合计、去结算            |
+| `pages/mine`           | `Mine.vue`          | 用户信息、订单/地址入口、退出登录     |
+| `pages/login`          | `Login.vue`         | 手机号+密码登录、注册、登录后回跳原页 |
+| `pages/product-detail` | `ProductDetail.vue` | 图文详情、加购、立即购买              |
+| `pages/order-confirm`  | `OrderConfirm.vue`  | 选收货地址、提交订单                  |
+| `pages/order-list`     | `OrderList.vue`     | 按状态筛选、支付/取消                 |
+| `pages/order-detail`   | `OrderDetail.vue`   | 订单详情、支付/取消                   |
+| `pages/address`        | `AddressList.vue`   | 地址增删改、设默认                    |
 
 与 H5 的差异（平台所致，不是功能缺失）：
 

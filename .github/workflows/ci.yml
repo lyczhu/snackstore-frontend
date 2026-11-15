@@ -25,6 +25,10 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile --config.strict-dep-builds=false
 
+      # 格式门禁放在 lint 前：Prettier 比 ESLint 快，能更早失败。
+      - name: Format check
+        run: pnpm format:check
+
       - name: Lint
         run: pnpm lint
 
@@ -47,3 +51,24 @@ jobs:
           test -f apps/weapp/miniprogram/miniprogram_npm/@snackstore/shared/index.js \
             || { echo "缺少 @snackstore/shared 纯模块入口"; exit 1; }
           echo "miniprogram_npm 产物校验通过"
+
+      # 产物门禁：先构建，再查体积预算与源码泄漏。
+      - name: Build all apps
+        run: pnpm build
+
+      # 根 pnpm size 内部会再跑一次 build，这里用 -r 只做检查，避免重复构建。
+      - name: Size budget
+        run: pnpm -r run size
+
+      # hidden sourcemap 会把 .map 写进 dist，文件名可由 chunk 名推导，
+      # 跟着静态资源上传即等于源码外泄。构建已默认关闭，这里是兜底断言。
+      - name: Assert no sourcemap in dist
+        run: |
+          set -e
+          leaks=$(find apps/mobile/dist apps/admin/dist -name '*.map' -print)
+          if [ -n "$leaks" ]; then
+            echo "检测到 sourcemap，禁止随静态资源发布："
+            echo "$leaks"
+            exit 1
+          fi
+          echo "未发现 .map"

@@ -15,5 +15,8 @@ components.d.ts
 # 产物分析报告
 report.html
 
+# 文档：长文与中文表格经 Prettier 重排会产生无意义 diff，文档格式不在 CI 门禁范围内
+docs/
+
 # AI 助手记忆
 .workbuddy/

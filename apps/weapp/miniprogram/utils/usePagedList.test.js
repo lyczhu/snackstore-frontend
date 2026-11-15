@@ -35,7 +35,9 @@ describe('createPagedList', () => {
       fetcher: () => {
         n += 1
         const cur = n
-        return new Promise((res) => setTimeout(() => res({ data: { data: [{ id: cur }] } }), cur === 1 ? 30 : 0))
+        return new Promise((res) =>
+          setTimeout(() => res({ data: { data: [{ id: cur }] } }), cur === 1 ? 30 : 0)
+        )
       }
     })
     l.onLoad() // seq=1，慢响应

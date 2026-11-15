@@ -177,12 +177,18 @@ describe('interpretResponse（传输层无关判定）', () => {
     expect(interpretResponse({ body: { code: 401, message: '过期' } }).action).toBe('unauthorized')
   })
   it('HTTP 401/403/500 → 对应文案', () => {
-    expect(interpretResponse({ httpStatus: 401, networkError: true }).message).toBe('登录已过期，请重新登录')
+    expect(interpretResponse({ httpStatus: 401, networkError: true }).message).toBe(
+      '登录已过期，请重新登录'
+    )
     expect(interpretResponse({ httpStatus: 403, networkError: true }).message).toBe('没有权限访问')
     expect(interpretResponse({ httpStatus: 500, networkError: true }).message).toBe('服务器错误')
   })
   it('HTTP 4xx 透传 body.message，归 network', () => {
-    const r = interpretResponse({ httpStatus: 404, body: { message: '商品不存在' }, networkError: true })
+    const r = interpretResponse({
+      httpStatus: 404,
+      body: { message: '商品不存在' },
+      networkError: true
+    })
     expect(r.action).toBe('network')
     expect(r.message).toBe('商品不存在')
   })

@@ -103,7 +103,10 @@ Page({
     this.setData({ loading: true })
     const a = this.data.address
     const data = {
-      items: this.data.items.map((item) => ({ productId: item.productId, quantity: item.quantity })),
+      items: this.data.items.map((item) => ({
+        productId: item.productId,
+        quantity: item.quantity
+      })),
       receiverName: a.receiverName,
       receiverPhone: a.receiverPhone,
       // 地址是「省市区+详细」拼出的纯文本快照（与 H5 后端约定一致，不传 addressId）

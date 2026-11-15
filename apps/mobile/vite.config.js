@@ -21,8 +21,11 @@ export default defineConfig(({ mode }) => {
     ].filter(Boolean),
     ...createBaseConfig({ port: 3000, apiTarget: env.VITE_API_TARGET || 'http://localhost:8080' }),
     build: {
-      // hidden：生成 sourcemap 但产物不引用，配合错误监控平台上传使用
-      sourcemap: mode === 'production' ? 'hidden' : false,
+      // 默认不产出 sourcemap：hidden 模式仍会把 .map 写到 dist，且文件名可由 chunk 名推导，
+      // 一旦随静态资源上传即等于源码外泄。需要排查线上问题时用：
+      //   VITE_SOURCEMAP=true pnpm build:mobile
+      // 这类产物只允许上传到错误监控平台，禁止进静态站点（CI 有断言）。
+      sourcemap: env.VITE_SOURCEMAP === 'true' ? 'hidden' : false,
       rollupOptions: {
         output: {
           // 拆分核心 vendor chunk，提升长缓存命中率
