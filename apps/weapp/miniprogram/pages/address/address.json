@@ -7,6 +7,7 @@
     "van-skeleton": "@vant/weapp/skeleton/index",
     "van-popup": "@vant/weapp/popup/index",
     "van-field": "@vant/weapp/field/index",
-    "van-switch": "@vant/weapp/switch/index"
+    "van-switch": "@vant/weapp/switch/index",
+    "van-area": "@vant/weapp/area/index"
   }
 }

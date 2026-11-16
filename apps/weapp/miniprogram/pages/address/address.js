@@ -5,6 +5,8 @@ import {
   deleteAddress,
   setDefaultAddress
 } from '../../api/address.js'
+import { areaList } from '@vant/area-data'
+import { resolveAreaCodes } from '@snackstore/shared/area'
 import { ensureLogin } from '../../utils/authGuard.js'
 import { confirm } from '../../utils/confirm.js'
 import { toastSuccess } from '../../utils/toast.js'
@@ -31,7 +33,13 @@ Page({
     editId: null,
     submitting: false,
     form: emptyForm(),
-    errors: { receiverName: '', receiverPhone: '', detail: '' }
+    errors: { receiverName: '', receiverPhone: '', area: '', detail: '' },
+    // 省市区数据体积大，只在打开选择器时才 setData（首次渲染不传）
+    areaList: null,
+    areaPickerVisible: false,
+    // van-area 的 value 是「最深一级的区划 code」（字符串），与 Vant 4 一致
+    areaCode: '',
+    areaText: ''
   },
 
   onLoad() {
@@ -56,7 +64,8 @@ Page({
       isEdit: false,
       editId: null,
       form: emptyForm(),
-      errors: { receiverName: '', receiverPhone: '', detail: '' },
+      errors: { receiverName: '', receiverPhone: '', area: '', detail: '' },
+      areaText: '',
       dialogVisible: true
     })
   },
@@ -67,7 +76,7 @@ Page({
     this.setData({
       isEdit: true,
       editId: addr.id,
-      errors: { receiverName: '', receiverPhone: '', detail: '' },
+      errors: { receiverName: '', receiverPhone: '', area: '', detail: '' },
       form: {
         receiverName: addr.receiverName,
         receiverPhone: addr.receiverPhone,
@@ -77,6 +86,7 @@ Page({
         detail: addr.detail,
         isDefault: addr.isDefault
       },
+      areaText: [addr.province, addr.city, addr.district].filter(Boolean).join(' / '),
       dialogVisible: true
     })
   },
@@ -94,16 +104,46 @@ Page({
     this.setData({ 'form.isDefault': e.detail ? 1 : 0 })
   },
 
+  // 编辑已有地址时按名称反查编码，让选择器定位到当前值
+  openAreaPicker() {
+    const f = this.data.form
+    const codes = resolveAreaCodes(areaList, f.province, f.city, f.district)
+    this.setData({
+      areaList: this.data.areaList || areaList,
+      areaCode: codes ? codes[codes.length - 1] : '',
+      areaPickerVisible: true
+    })
+  },
+
+  closeAreaPicker() {
+    this.setData({ areaPickerVisible: false })
+  },
+
+  onAreaConfirm(e) {
+    const values = (e.detail && e.detail.values) || []
+    // 选到哪级存哪级：部分城市无区县，此时 district 留空
+    const [p, c, d] = values.map((v) => (v ? v.name : ''))
+    this.setData({
+      'form.province': p || '',
+      'form.city': c || '',
+      'form.district': d || '',
+      areaText: [p, c, d].filter(Boolean).join(' / '),
+      'errors.area': '',
+      areaPickerVisible: false
+    })
+  },
+
   // van-form 在 Vant Weapp 中不存在，规则同 H5 在页面层实现
   validate() {
     const f = this.data.form
-    const errors = { receiverName: '', receiverPhone: '', detail: '' }
+    const errors = { receiverName: '', receiverPhone: '', area: '', detail: '' }
     if (!f.receiverName) errors.receiverName = '请输入收货人姓名'
     if (!f.receiverPhone) errors.receiverPhone = '请输入手机号'
     else if (!PHONE_RE.test(f.receiverPhone)) errors.receiverPhone = '手机号格式不正确'
+    if (!f.province) errors.area = '请选择所在地区'
     if (!f.detail) errors.detail = '请输入详细地址'
     this.setData({ errors })
-    return !errors.receiverName && !errors.receiverPhone && !errors.detail
+    return !errors.receiverName && !errors.receiverPhone && !errors.area && !errors.detail
   },
 
   submitForm() {

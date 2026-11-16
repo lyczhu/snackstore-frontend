@@ -19,6 +19,7 @@
   "dependencies": {
     "@snackstore/shared": "workspace:*",
     "@snackstore/vite-config": "workspace:*",
+    "@vant/area-data": "catalog:",
     "axios": "catalog:",
     "dompurify": "^3.4.12",
     "pinia": "catalog:",

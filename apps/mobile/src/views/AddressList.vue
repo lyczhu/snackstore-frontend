@@ -65,9 +65,16 @@
               { pattern: /^1[3-9]\d{9}$/, message: '手机号格式不正确' }
             ]"
           />
-          <van-field v-model="form.province" name="province" label="省份" placeholder="省份" />
-          <van-field v-model="form.city" name="city" label="城市" placeholder="城市" />
-          <van-field v-model="form.district" name="district" label="区县" placeholder="区县" />
+          <van-field
+            :model-value="areaText"
+            name="area"
+            label="所在地区"
+            placeholder="请选择省/市/区"
+            readonly
+            is-link
+            :rules="[{ required: true, message: '请选择所在地区' }]"
+            @click="openAreaPicker"
+          />
           <van-field
             v-model="form.detail"
             name="detail"
@@ -96,12 +103,25 @@
         </van-form>
       </div>
     </van-popup>
+
+    <!-- 省市区级联：选定后拆回省份/城市/区县三个字符串（后端字段不变） -->
+    <van-popup v-model:show="areaPickerVisible" position="bottom" round>
+      <van-area
+        v-model="areaCode"
+        :area-list="areaList"
+        title="选择省/市/区"
+        @confirm="onAreaConfirm"
+        @cancel="areaPickerVisible = false"
+      />
+    </van-popup>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { showSuccessToast, showConfirmDialog } from 'vant'
+import { areaList } from '@vant/area-data'
+import { resolveAreaCodes } from '@snackstore/shared'
 import {
   getAddressList,
   postAddress,
@@ -119,6 +139,9 @@ const formRef = ref(null)
 const initialLoading = ref(true)
 const loadError = ref(false)
 const submitting = ref(false)
+const areaPickerVisible = ref(false)
+// Vant 4 的 Area v-model 是「最深一级的区划 code」字符串，不是数组
+const areaCode = ref('')
 
 const form = reactive({
   receiverName: '',
@@ -129,6 +152,28 @@ const form = reactive({
   detail: '',
   isDefault: 0
 })
+
+const areaText = computed(() =>
+  [form.province, form.city, form.district].filter(Boolean).join(' / ')
+)
+
+// 编辑已有地址时按名称反查编码，让选择器定位到当前值
+function openAreaPicker() {
+  const codes = resolveAreaCodes(areaList, form.province, form.city, form.district)
+  areaCode.value = codes ? codes[codes.length - 1] : ''
+  areaPickerVisible.value = true
+}
+
+function onAreaConfirm({ selectedOptions }) {
+  // 选到哪级存哪级：部分城市无区县，此时 district 留空
+  const [province, city, district] = selectedOptions.map((option) => option.text)
+  Object.assign(form, {
+    province: province || '',
+    city: city || '',
+    district: district || ''
+  })
+  areaPickerVisible.value = false
+}
 
 onMounted(() => {
   loadAddresses()

@@ -81,27 +81,16 @@
         data-field="receiverPhone"
         bind:change="onField"
       />
-      <van-field
-        label="省份"
-        value="{{form.province}}"
-        placeholder="省份"
-        data-field="province"
-        bind:change="onField"
-      />
-      <van-field
-        label="城市"
-        value="{{form.city}}"
-        placeholder="城市"
-        data-field="city"
-        bind:change="onField"
-      />
-      <van-field
-        label="区县"
-        value="{{form.district}}"
-        placeholder="区县"
-        data-field="district"
-        bind:change="onField"
-      />
+      <view bind:tap="openAreaPicker">
+        <van-field
+          label="所在地区"
+          required
+          readonly
+          value="{{areaText}}"
+          placeholder="请选择省/市/区"
+          error-message="{{errors.area}}"
+        />
+      </view>
       <van-field
         label="详细地址"
         required
@@ -130,5 +119,17 @@
         <van-button class="cancel-btn" block round bind:click="closeDialog">取消</van-button>
       </view>
     </view>
+  </van-popup>
+
+  <!-- 省市区级联：选定后拆回省份/城市/区县三个字符串（后端字段不变） -->
+  <van-popup show="{{areaPickerVisible}}" position="bottom" round bind:close="closeAreaPicker">
+    <van-area
+      wx:if="{{areaPickerVisible}}"
+      area-list="{{areaList}}"
+      value="{{areaCode}}"
+      title="选择省/市/区"
+      bind:confirm="onAreaConfirm"
+      bind:cancel="closeAreaPicker"
+    />
   </van-popup>
 </view>

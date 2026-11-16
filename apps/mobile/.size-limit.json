@@ -12,9 +12,15 @@
     "gzip": true
   },
   {
-    "name": "mobile 全部 JS 合计 (gzip)",
-    "path": "dist/assets/*.js",
+    "name": "mobile 全部 JS 合计（不含省市区数据，gzip）",
+    "path": ["dist/assets/*.js", "!dist/assets/area-data-*.js"],
     "limit": "150 KB",
+    "gzip": true
+  },
+  {
+    "name": "mobile 省市区数据（地址页按需加载，gzip）",
+    "path": "dist/assets/area-data-*.js",
+    "limit": "40 KB",
     "gzip": true
   }
 ]

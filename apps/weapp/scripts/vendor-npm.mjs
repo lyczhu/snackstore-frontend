@@ -1,5 +1,6 @@
 // 生成 miniprogram_npm —— 绕过微信开发者工具「构建 npm」在 pnpm workspace 布局下的空跑（POC-4 实测结论）。
 // - @vant/weapp：把 node_modules/@vant/weapp/lib 内容铺到 miniprogram_npm/@vant/weapp/（对齐 devtools 构建产物结构）
+// - @vant/area-data：只 vendor 省市区数据（CJS 入口可直接被小程序 require）
 // - @snackstore/shared：只 vendor 平台无关纯模块（cart/storage/constants/response），不引入 axios
 import { cp, rm, mkdir, writeFile } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
@@ -10,6 +11,7 @@ const scriptDir = dirname(fileURLToPath(import.meta.url)) // apps/weapp/scripts
 const weappDir = resolve(scriptDir, '..') // apps/weapp
 const outDir = resolve(weappDir, 'miniprogram', 'miniprogram_npm')
 const vantLib = resolve(weappDir, 'node_modules', '@vant', 'weapp', 'lib')
+const areaDataEntry = resolve(weappDir, 'node_modules', '@vant', 'area-data', 'dist', 'index.cjs')
 const sharedSrc = resolve(weappDir, '..', '..', 'packages', 'shared', 'src')
 
 const sharedFiles = [
@@ -20,7 +22,8 @@ const sharedFiles = [
   'errorTracking.js',
   'payment.js',
   'agreements.js',
-  'orderAmount.js'
+  'orderAmount.js',
+  'area.js'
 ]
 
 if (!existsSync(vantLib)) {
@@ -31,12 +34,20 @@ if (!existsSync(sharedSrc)) {
   console.error('[vendor-npm] 未找到 shared 源码：' + sharedSrc)
   process.exit(1)
 }
+if (!existsSync(areaDataEntry)) {
+  console.error('[vendor-npm] 未找到 @vant/area-data：' + areaDataEntry)
+  process.exit(1)
+}
 
 await rm(outDir, { recursive: true, force: true })
 await mkdir(resolve(outDir, '@snackstore', 'shared'), { recursive: true })
 
 // @vant/weapp：lib 内容直接铺到包根（组件路径 @vant/weapp/button/index → miniprogram_npm/@vant/weapp/button/index）
 await cp(vantLib, resolve(outDir, '@vant', 'weapp'), { recursive: true })
+
+// @vant/area-data：CJS 包根入口，供 van-area 的 area-list 使用
+await mkdir(resolve(outDir, '@vant', 'area-data'), { recursive: true })
+await cp(areaDataEntry, resolve(outDir, '@vant', 'area-data', 'index.js'))
 
 // @snackstore/shared：仅纯模块
 for (const f of sharedFiles) {
@@ -53,6 +64,7 @@ const barrel = [
   "export { createPaymentProvider, parseServerTime, PAYMENT_WINDOW_MS } from './payment.js'",
   "export { getAgreement, AGREEMENT_TYPES } from './agreements.js'",
   "export { parseCents, reconcileOrderAmount } from './orderAmount.js'",
+  "export { resolveAreaCodes } from './area.js'",
   ''
 ].join('\n')
 await writeFile(resolve(outDir, '@snackstore', 'shared', 'index.js'), barrel, 'utf8')

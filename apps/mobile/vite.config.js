@@ -29,7 +29,9 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         output: {
           // 拆分核心 vendor chunk，提升长缓存命中率
+          // area-data（116KB 省市区数据）必先命中：只被地址页懒加载路由引用，不进首屏
           manualChunks: createManualChunks({
+            'area-data': ['/node_modules/@vant/area-data/'],
             'vendor-vant': ['/node_modules/vant/', '/node_modules/@vant/'],
             'vendor-vue': [
               '/node_modules/vue/',
