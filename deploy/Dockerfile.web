@@ -6,7 +6,9 @@
 #   docker build -f deploy/Dockerfile.web --build-arg APP=mobile -t snackstore-mobile .
 #   docker build -f deploy/Dockerfile.web --build-arg APP=admin  -t snackstore-admin .
 
-ARG NODE_VERSION=20
+# pnpm 11 依赖 node:sqlite（Node 22.5+ 才有）；用 node:20 会在 pnpm install 阶段
+# 直接抛 ERR_UNKNOWN_BUILTIN_MODULE，因此这里锁定 24（当前 LTS）。
+ARG NODE_VERSION=24
 
 FROM node:${NODE_VERSION}-alpine AS build
 
@@ -31,6 +33,10 @@ RUN pnpm install --frozen-lockfile --config.strict-dep-builds=false --filter @sn
 RUN pnpm --filter @snackstore/${APP} build
 
 FROM nginx:1.27-alpine
+
+# 必须重新声明：ARG 的作用域限于单个 FROM 阶段，不声明的 ${APP} 会展开为空串，
+# 导致 COPY 变成 /repo/apps/dist（路径不存在，构建失败）。
+ARG APP=mobile
 
 # 站点配置：官方镜像启动时用 envsubst 渲染 /etc/nginx/templates/*.template。
 # 该机制只替换「环境中真实存在的变量」，因此模板里的 $uri/$host/$remote_addr

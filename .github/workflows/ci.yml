@@ -15,9 +15,11 @@ jobs:
         with:
           version: 11
 
+      # pnpm 11 依赖 node:sqlite（Node 22.5+），node 20 会在 install/命令运行时
+      # 抛 ERR_UNKNOWN_BUILTIN_MODULE，这里与 Dockerfile.web 保持一致用 24。
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: pnpm
 
       # 依赖里 @swc/core/less/protobufjs 等的原生构建脚本对本项目非必需；

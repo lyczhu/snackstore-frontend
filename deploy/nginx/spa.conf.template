@@ -8,8 +8,15 @@ server {
     client_max_body_size ${CLIENT_MAX_BODY_SIZE};
 
     # 复用构建期预生成的 .gz，避免运行时动态压缩占 CPU。
+    # gzip_vary 必须开：gzip_static 本身不会自动加 Vary，缺了会让 CDN 把 gzip 响应
+    # 发给不支持的客户端。
+    # 动态 gzip 作兵底：index.html 不在构建期压缩范围内（体积 ~1KB）。
     # brotli_static 需要 ngx_brotli 模块，官方 nginx 镜像未内置，启用前请确认镜像来源。
     gzip_static on;
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_types text/plain text/css application/javascript application/json image/svg+xml;
 
     # 源码防泄漏：hidden sourcemap 会生成 .map 且文件名可由 chunk 名推导。
     # 构建已默认关闭 sourcemap，这里是兜底。
@@ -30,10 +37,10 @@ server {
         proxy_read_timeout 30s;
     }
 
-    # 带内容 hash 的构建产物可长缓存
+    # 带内容 hash 的构建产物可长缓存。
+    # 不用 expires：它会再发一条 Cache-Control: max-age=...，与下面这条叠加成两个同名头。
     location /assets/ {
-        expires 1y;
-        add_header Cache-Control "public, immutable";
+        add_header Cache-Control "public, max-age=31536000, immutable";
     }
 
     # index.html 不缓存，否则发版后仍指向旧 chunk
