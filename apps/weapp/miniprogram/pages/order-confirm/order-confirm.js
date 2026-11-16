@@ -2,8 +2,11 @@ import { getAddressList } from '../../api/address.js'
 import { postOrder } from '../../api/order.js'
 import { cartStore, clearCart, clearBuyNowItem } from '../../stores/cart.js'
 import { calcCentsTotal } from '@snackstore/shared/cart'
+import { reconcileOrderAmount } from '@snackstore/shared/orderAmount'
 import { ensureLogin } from '../../utils/authGuard.js'
 import { toastFail, toastSuccess } from '../../utils/toast.js'
+
+const toYuan = (cents) => (cents / 100).toFixed(2)
 
 Page({
   data: {
@@ -115,10 +118,18 @@ Page({
     // 幂等键：防网络重试/重复提交产生重复订单（按钮 loading 防不了重试）
     const idempotencyKey = `${Date.now()}-${Math.random().toString(16).slice(2)}`
     try {
-      await postOrder(data, { headers: { 'Idempotency-Key': idempotencyKey } })
+      const res = await postOrder(data, { headers: { 'Idempotency-Key': idempotencyKey } })
+      const order = (res && res.data) || {}
+      // 本地快照 vs 服务端实收：调价或快照过期时以后端金额为准，并如实告知用户
+      const check = reconcileOrderAmount(this.data.total, order.totalAmount)
       // 直购仅清快照；购物车结算才清空购物车
       if (this.data.from === 'buyNow') clearBuyNowItem()
       else clearCart()
+      if (check.mismatch) {
+        this.setData({ loading: false })
+        this.showAmountChanged(check, order.id)
+        return
+      }
       toastSuccess('下单成功')
       // replace 语义：避免回退到确认页重复提交
       wx.redirectTo({ url: '/pages/order-list/order-list' })
@@ -126,6 +137,23 @@ Page({
       // 错误提示已由请求层统一处理（对齐 H5 拦截器）
       this.setData({ loading: false })
     }
+  },
+
+  // 金额已变：告知实际应付金额后进详情页（可再取消订单）
+  showAmountChanged(check, orderId) {
+    wx.showModal({
+      title: '订单金额已更新',
+      content: `本地显示 ¥${toYuan(check.localCents)}，实际应付 ¥${toYuan(check.serverCents)}。商品价格可能已调整，请以下单金额为准。`,
+      showCancel: false,
+      confirmText: '查看订单',
+      success: () => {
+        wx.redirectTo({
+          url: orderId
+            ? '/pages/order-detail/order-detail?id=' + orderId
+            : '/pages/order-list/order-list'
+        })
+      }
+    })
   },
 
   goHome() {

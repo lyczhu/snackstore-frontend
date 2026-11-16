@@ -84,8 +84,9 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { showToast, showSuccessToast } from 'vant'
+import { showToast, showSuccessToast, showConfirmDialog } from 'vant'
 import { postOrder } from '@/api/order'
+import { calcCentsTotal, reconcileOrderAmount } from '@snackstore/shared'
 import { getAddressList } from '@/api/address'
 import { useCartStore } from '@/stores/cart'
 import PageNavBar from '@/components/PageNavBar.vue'
@@ -104,14 +105,9 @@ const showAddressPicker = ref(false)
 // 直购模式只结算直购快照，购物车结算不受影响
 const isBuyNow = computed(() => route.query.from === 'buyNow' && !!cartStore.buyNowItem)
 const settleItems = computed(() => (isBuyNow.value ? [cartStore.buyNowItem] : cartStore.items))
-// 金额改用「分」为整数单位累加再换算回元，避免浮点漂移
-const settleTotal = computed(() => {
-  const cents = settleItems.value.reduce(
-    (sum, item) => sum + Math.round((item.price ?? 0) * 100) * item.quantity,
-    0
-  )
-  return cents / 100
-})
+// 分单位累加再换算回元（与小程序同源，避免浮点漂移）
+const settleTotal = computed(() => calcCentsTotal(settleItems.value))
+const toYuan = (cents) => (cents / 100).toFixed(2)
 
 onMounted(() => {
   // 直购页刷新后内存快照丢失，引导重新下单，防止误按购物车结算
@@ -159,12 +155,28 @@ async function submitOrder() {
     // 幂等键：防网络重试/重复提交产生重复订单（按钮 loading 只能防双击，防不了重试）
     const idempotencyKey =
       globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`
-    await postOrder(data, { headers: { 'Idempotency-Key': idempotencyKey } })
+    const res = await postOrder(data, { headers: { 'Idempotency-Key': idempotencyKey } })
+    const order = res?.data || {}
+    // 本地快照 vs 服务端实收：调价或快照过期时以后端金额为准，并如实告知用户
+    const check = reconcileOrderAmount(settleTotal.value, order.totalAmount)
     // 直购仅清理快照；购物车结算才清空购物车
     if (isBuyNow.value) {
       cartStore.clearBuyNowItem()
     } else {
       cartStore.clearCart()
+    }
+    if (check.mismatch) {
+      await showConfirmDialog({
+        title: '订单金额已更新',
+        message: `本地显示 ¥${toYuan(check.localCents)}，实际应付 ¥${toYuan(
+          check.serverCents
+        )}。商品价格可能已调整，请以下单金额为准。`,
+        showCancelButton: false,
+        confirmButtonText: '查看订单'
+      }).catch(() => {})
+      // 金额已变：进详情页让用户确认或取消，而不是无声跳回列表
+      router.replace(order.id ? `/order/${order.id}` : '/order/list')
+      return
     }
     showSuccessToast('下单成功')
     // replace 避免回退到确认页重复提交
