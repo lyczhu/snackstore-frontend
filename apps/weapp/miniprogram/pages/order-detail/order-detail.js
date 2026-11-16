@@ -1,4 +1,4 @@
-import { getOrderDetail, payOrder, cancelOrder } from '../../api/order.js'
+import { getOrderDetail, cancelOrder } from '../../api/order.js'
 import { getStatusText, getStatusType } from '../../utils/orderStatus.js'
 import { confirm } from '../../utils/confirm.js'
 import { ensureLogin } from '../../utils/authGuard.js'
@@ -43,19 +43,8 @@ Page({
     else wx.switchTab({ url: '/pages/home/home' })
   },
 
-  async handlePay() {
-    if (this.data.actionLoading) return
-    if (!(await confirm('确认支付该订单？', { title: '模拟支付' }))) return
-    this.setData({ actionLoading: true })
-    try {
-      await payOrder(this.data.order.id)
-      toastSuccess('支付成功')
-      this.loadOrder()
-    } catch {
-      /* 错误提示已由请求层统一处理 */
-    } finally {
-      this.setData({ actionLoading: false })
-    }
+  goPay() {
+    wx.navigateTo({ url: '/pages/payment/payment?id=' + this.data.order.id })
   },
 
   async handleCancel() {

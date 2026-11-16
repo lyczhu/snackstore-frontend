@@ -1,0 +1,46 @@
+<view class="payment-page">
+  <van-skeleton wx:if="{{loading}}" title row="5" />
+
+  <van-empty wx:elif="{{loadError}}" image="error" description="订单加载失败">
+    <van-button round type="primary" size="small" bind:click="loadOrder">重试</van-button>
+  </van-empty>
+
+  <block wx:elif="{{intent}}">
+    <view class="demo-banner">演示环境：不会发起真实扣款，也不会产生支付记录。</view>
+
+    <view class="amount-card">
+      <view class="label">应付金额</view>
+      <view class="amount"><text class="symbol">¥</text>{{intent.amount}}</view>
+      <view wx:if="{{countdownText}}" class="countdown">支付剩余 {{countdownText}}</view>
+      <view wx:elif="{{expired}}" class="countdown">支付窗口已结束，仍可尝试支付</view>
+    </view>
+
+    <view class="info-card">
+      <view class="info-line">订单号：{{intent.orderNo}}</view>
+      <view class="info-line">支付单号：{{intent.paymentNo}}</view>
+    </view>
+
+    <block wx:if="{{paid}}">
+      <view class="result">
+        <van-icon name="checked" size="64px" color="#e55a2b" />
+        <view class="result-text">支付成功</view>
+      </view>
+      <van-button type="primary" size="large" block bind:click="goOrder">查看订单</van-button>
+    </block>
+
+    <block wx:else>
+      <van-button
+        type="primary"
+        size="large"
+        block
+        loading="{{paying}}"
+        bind:click="handlePay"
+      >
+        确认支付 ¥{{intent.amount}}
+      </van-button>
+      <van-button class="later-btn" plain size="large" block bind:click="goOrder">
+        稍后支付
+      </van-button>
+    </block>
+  </block>
+</view>

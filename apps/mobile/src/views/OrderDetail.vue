@@ -51,9 +51,7 @@
             @click="handleCancel"
             >取消订单</van-button
           >
-          <van-button type="primary" size="large" :loading="actionLoading" @click="handlePay"
-            >模拟支付</van-button
-          >
+          <van-button type="primary" size="large" @click="goPay">去支付</van-button>
         </div>
       </SubmitBar>
     </template>
@@ -64,7 +62,7 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { showSuccessToast, showConfirmDialog } from 'vant'
-import { getOrderDetail, payOrder, cancelOrder } from '@/api/order'
+import { getOrderDetail, cancelOrder } from '@/api/order'
 import { getStatusText, getStatusType } from '@/utils/orderStatus'
 import PageNavBar from '@/components/PageNavBar.vue'
 import SubmitBar from '@/components/SubmitBar.vue'
@@ -99,22 +97,8 @@ function goBack() {
   else router.replace('/')
 }
 
-async function handlePay() {
-  try {
-    await showConfirmDialog({ title: '模拟支付', message: '确认支付该订单？' })
-  } catch {
-    return
-  }
-  actionLoading.value = true
-  try {
-    await payOrder(order.value.id)
-    showSuccessToast('支付成功')
-    await loadOrder()
-  } catch (e) {
-    // 错误提示已由 request 拦截器统一处理
-  } finally {
-    actionLoading.value = false
-  }
+function goPay() {
+  router.push({ name: 'Payment', params: { id: order.value.id } })
 }
 
 async function handleCancel() {

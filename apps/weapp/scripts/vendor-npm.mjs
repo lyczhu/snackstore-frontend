@@ -12,7 +12,14 @@ const outDir = resolve(weappDir, 'miniprogram', 'miniprogram_npm')
 const vantLib = resolve(weappDir, 'node_modules', '@vant', 'weapp', 'lib')
 const sharedSrc = resolve(weappDir, '..', '..', 'packages', 'shared', 'src')
 
-const sharedFiles = ['cart.js', 'storage.js', 'constants.js', 'response.js', 'errorTracking.js']
+const sharedFiles = [
+  'cart.js',
+  'storage.js',
+  'constants.js',
+  'response.js',
+  'errorTracking.js',
+  'payment.js'
+]
 
 if (!existsSync(vantLib)) {
   console.error('[vendor-npm] 未找到 @vant/weapp/lib：' + vantLib)
@@ -41,6 +48,7 @@ const barrel = [
   "export { API_SUCCESS_CODE, ORDER_STATUS, getOrderStatusText } from './constants.js'",
   "export { interpretResponse } from './response.js'",
   "export { configureErrorTracking, reportError, setupErrorTracking, resetErrorTracking } from './errorTracking.js'",
+  "export { createPaymentProvider, parseServerTime, PAYMENT_WINDOW_MS } from './payment.js'",
   ''
 ].join('\n')
 await writeFile(resolve(outDir, '@snackstore', 'shared', 'index.js'), barrel, 'utf8')

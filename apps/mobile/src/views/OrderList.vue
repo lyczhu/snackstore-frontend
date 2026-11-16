@@ -54,11 +54,7 @@
               <span>合计: ¥{{ order.totalAmount }}</span>
               <div v-if="order.status === 0" class="order-actions">
                 <!-- 操作期间该订单的按钮 loading 态不可点，防止双击并发支付/取消 -->
-                <van-button
-                  type="primary"
-                  size="small"
-                  :loading="actionId === order.id"
-                  @click.stop="handlePay(order.id)"
+                <van-button type="primary" size="small" @click.stop="handlePay(order.id)"
                   >支付</van-button
                 >
                 <van-button
@@ -83,7 +79,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { showSuccessToast, showConfirmDialog } from 'vant'
-import { getOrderList, payOrder, cancelOrder } from '@/api/order'
+import { getOrderList, cancelOrder } from '@/api/order'
 import { useUserStore } from '@/stores/user'
 import { getStatusText, getStatusType } from '@/utils/orderStatus'
 import PageNavBar from '@/components/PageNavBar.vue'
@@ -120,22 +116,8 @@ function goDetail(id) {
   router.push(`/order/${id}`)
 }
 
-async function handlePay(id) {
-  try {
-    await showConfirmDialog({ title: '模拟支付', message: '确认支付该订单？' })
-  } catch {
-    return // 用户取消
-  }
-  actionId.value = id
-  try {
-    await payOrder(id)
-    showSuccessToast('支付成功')
-    resetAndReload()
-  } catch (e) {
-    // 错误提示已由 request 拦截器统一处理
-  } finally {
-    actionId.value = null
-  }
+function handlePay(id) {
+  router.push({ name: 'Payment', params: { id } })
 }
 
 async function handleCancel(id) {

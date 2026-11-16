@@ -55,10 +55,9 @@
           class="action-btn action-btn--last"
           type="primary"
           size="large"
-          loading="{{actionLoading}}"
-          bind:click="handlePay"
+          bind:click="goPay"
         >
-          模拟支付
+          去支付
         </van-button>
       </view>
     </submit-bar>
