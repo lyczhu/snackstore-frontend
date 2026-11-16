@@ -1,5 +1,8 @@
 <view class="order-confirm">
-  <block wx:if="{{items.length > 0}}">
+  <block wx:if="{{validItems.length > 0}}">
+    <view wx:if="{{invalidItems.length > 0}}" class="invalid-notice">
+      {{invalidItems.length}} 件商品已失效，未计入本次结算
+    </view>
     <!-- 地址区：加载失败可重试 / 已有地址可切换 / 无地址去新增（对齐 OrderConfirm.vue） -->
     <view wx:if="{{addressError}}" class="address-section" hover-class="address-section--hover" bind:tap="retryAddresses">
       <view class="address-tip">地址加载失败，点击重试</view>
@@ -17,16 +20,25 @@
       <van-icon name="arrow" size="32rpx" color="#767676" />
     </view>
 
-    <!-- 结算列表按来源计算（购物车 or 直购快照） -->
+    <!-- 结算列表按来源计算（购物车 or 直购快照），失效条目不参与结算 -->
     <view class="items-section">
       <order-goods-item
-        wx:for="{{items}}"
+        wx:for="{{validItems}}"
         wx:key="productId"
         image="{{item.coverImage}}"
         name="{{item.name}}"
         price="{{item.price}}"
         quantity="{{item.quantity}}"
       />
+      <view wx:for="{{invalidItems}}" wx:key="productId" class="invalid-item">
+        <order-goods-item
+          image="{{item.coverImage}}"
+          name="{{item.name}}"
+          price="{{item.price}}"
+          quantity="{{item.quantity}}"
+        />
+        <view class="invalid-reason">{{item.issueText}}</view>
+      </view>
     </view>
 
     <view class="total-section">
@@ -35,14 +47,31 @@
     </view>
 
     <submit-bar>
-      <van-button block round type="primary" size="large" loading="{{loading}}" bind:click="submitOrder">
+      <van-button
+        block
+        round
+        type="primary"
+        size="large"
+        loading="{{loading}}"
+        disabled="{{checking}}"
+        bind:click="submitOrder"
+      >
         提交订单
       </van-button>
     </submit-bar>
   </block>
 
-  <van-empty wx:else description="暂无待结算商品">
-    <van-button round type="primary" size="small" bind:click="goHome">去逛逛</van-button>
+  <van-empty wx:else description="{{items.length > 0 ? '商品已失效，无法结算' : '暂无待结算商品'}}">
+    <van-button
+      wx:if="{{items.length > 0}}"
+      round
+      type="primary"
+      size="small"
+      bind:click="goBackAfterInvalid"
+    >
+      {{from === 'buyNow' ? '去逛逛' : '返回购物车'}}
+    </van-button>
+    <van-button wx:else round type="primary" size="small" bind:click="goHome">去逛逛</van-button>
   </van-empty>
 
   <!-- 地址选择：底部弹层（替代对话框，移动端标准交互） -->

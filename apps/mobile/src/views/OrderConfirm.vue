@@ -2,7 +2,13 @@
   <div class="order-confirm">
     <PageNavBar title="确认订单" />
 
-    <template v-if="settleItems.length > 0">
+    <template v-if="validItems.length > 0">
+      <van-notice-bar
+        v-if="invalidItems.length > 0"
+        left-icon="info-o"
+        :text="`${invalidItems.length} 件商品已失效，未计入本次结算`"
+        class="invalid-notice"
+      />
       <!-- 地址选择区改为语义化 button -->
       <button v-if="addressError" type="button" class="address-section" @click="loadAddresses">
         <p>地址加载失败，点击重试</p>
@@ -30,16 +36,25 @@
         <van-icon name="arrow" class="arrow-icon" />
       </button>
 
-      <!-- 结算列表按来源计算（购物车 或 直购快照） -->
+      <!-- 结算列表按来源计算（购物车 或 直购快照），失效条目不参与结算 -->
       <div class="items-section">
         <OrderGoodsItem
-          v-for="item in settleItems"
+          v-for="item in validItems"
           :key="item.productId"
           :image="item.coverImage"
           :name="item.name"
           :price="item.price"
           :quantity="item.quantity"
         />
+        <div v-for="item in invalidItems" :key="item.productId" class="invalid-item">
+          <OrderGoodsItem
+            :image="item.coverImage"
+            :name="item.name"
+            :price="item.price"
+            :quantity="item.quantity"
+          />
+          <p class="invalid-reason">{{ issueText(item.productId) }}</p>
+        </div>
       </div>
 
       <div class="total-section">
@@ -48,14 +63,34 @@
       </div>
 
       <SubmitBar>
-        <van-button block round type="primary" size="large" :loading="loading" @click="submitOrder">
+        <van-button
+          block
+          round
+          type="primary"
+          size="large"
+          :loading="loading"
+          :disabled="checking"
+          @click="submitOrder"
+        >
           提交订单
         </van-button>
       </SubmitBar>
     </template>
 
-    <van-empty v-else description="暂无待结算商品">
-      <van-button round type="primary" size="small" to="/home">去逛逛</van-button>
+    <van-empty
+      v-else
+      :description="settleItems.length > 0 ? '商品已失效，无法结算' : '暂无待结算商品'"
+    >
+      <van-button
+        v-if="settleItems.length > 0"
+        round
+        type="primary"
+        size="small"
+        :to="isBuyNow ? '/home' : '/cart'"
+      >
+        {{ isBuyNow ? '去逛逛' : '返回购物车' }}
+      </van-button>
+      <van-button v-else round type="primary" size="small" to="/home">去逛逛</van-button>
     </van-empty>
 
     <!-- 地址选择弹层：移动端标准底部弹出，替代 90% 宽对话框 -->
@@ -86,7 +121,13 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { showToast, showSuccessToast, showConfirmDialog } from 'vant'
 import { postOrder } from '@/api/order'
-import { calcCentsTotal, reconcileOrderAmount } from '@snackstore/shared'
+import { getProductDetail } from '@/api/product'
+import {
+  calcCentsTotal,
+  reconcileOrderAmount,
+  getCartItemIssue,
+  CART_ISSUE_TEXT
+} from '@snackstore/shared'
 import { getAddressList } from '@/api/address'
 import { useCartStore } from '@/stores/cart'
 import PageNavBar from '@/components/PageNavBar.vue'
@@ -101,13 +142,19 @@ const addresses = ref([])
 const defaultAddress = ref(null)
 const addressError = ref(false)
 const showAddressPicker = ref(false)
+// productId → 失效原因（offline / soldout / insufficient）
+const itemIssues = ref({})
+const checking = ref(false)
 
 // 直购模式只结算直购快照，购物车结算不受影响
 const isBuyNow = computed(() => route.query.from === 'buyNow' && !!cartStore.buyNowItem)
 const settleItems = computed(() => (isBuyNow.value ? [cartStore.buyNowItem] : cartStore.items))
 // 分单位累加再换算回元（与小程序同源，避免浮点漂移）
-const settleTotal = computed(() => calcCentsTotal(settleItems.value))
+const validItems = computed(() => settleItems.value.filter((i) => !itemIssues.value[i.productId]))
+const invalidItems = computed(() => settleItems.value.filter((i) => itemIssues.value[i.productId]))
+const settleTotal = computed(() => calcCentsTotal(validItems.value))
 const toYuan = (cents) => (cents / 100).toFixed(2)
+const issueText = (productId) => CART_ISSUE_TEXT[itemIssues.value[productId]] || '商品不可购买'
 
 onMounted(() => {
   // 直购页刷新后内存快照丢失，引导重新下单，防止误按购物车结算
@@ -117,7 +164,27 @@ onMounted(() => {
     return
   }
   loadAddresses()
+  validateItems()
 })
+
+// 结算快照可能已过期：按服务端最新商品校验，失效条目不进订单也不计入合计
+async function validateItems() {
+  if (settleItems.value.length === 0) return
+  checking.value = true
+  const results = await Promise.all(
+    settleItems.value.map(async (item) => {
+      try {
+        const res = await getProductDetail(item.productId)
+        return [item.productId, getCartItemIssue(item, res?.data)]
+      } catch (e) {
+        // 查询失败不判失效，避免网络波动阻碍下单
+        return [item.productId, null]
+      }
+    })
+  )
+  itemIssues.value = Object.fromEntries(results.filter(([, issue]) => issue))
+  checking.value = false
+}
 
 async function loadAddresses() {
   addressError.value = false
@@ -141,10 +208,14 @@ async function submitOrder() {
     showToast('请选择收货地址')
     return
   }
+  if (validItems.value.length === 0) {
+    showToast('商品已失效，无法结算')
+    return
+  }
   loading.value = true
   try {
     const data = {
-      items: settleItems.value.map((item) => ({
+      items: validItems.value.map((item) => ({
         productId: item.productId,
         quantity: item.quantity
       })),
@@ -221,6 +292,21 @@ async function submitOrder() {
     color: var(--color-text-placeholder); /* 原 #ccc 对比度不足 */
     flex-shrink: 0;
     margin-left: 8px;
+  }
+}
+
+.invalid-notice {
+  margin-bottom: 16px;
+  border-radius: var(--radius-card);
+}
+
+.invalid-item {
+  opacity: 0.55;
+
+  .invalid-reason {
+    padding: 2px 0 8px;
+    font-size: 12px;
+    color: var(--color-danger, #ee0a24);
   }
 }
 

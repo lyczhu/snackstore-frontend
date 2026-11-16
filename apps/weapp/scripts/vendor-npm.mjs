@@ -45,7 +45,7 @@ for (const f of sharedFiles) {
 
 // 防御性：提供一个不含 axios 的 index 入口，避免任何残留的裸导入 '@snackstore/shared' 解析失败
 const barrel = [
-  "export { mergeCartItems, calcCentsTotal } from './cart.js'",
+  "export { mergeCartItems, calcCentsTotal, getCartItemIssue, CART_ISSUE_TEXT } from './cart.js'",
   "export { safeParse } from './storage.js'",
   "export { API_SUCCESS_CODE, ORDER_STATUS, getOrderStatusText } from './constants.js'",
   "export { interpretResponse } from './response.js'",

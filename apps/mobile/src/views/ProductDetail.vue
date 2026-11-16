@@ -53,6 +53,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { showToast, showSuccessToast } from 'vant'
 import { getProductDetail } from '@/api/product'
+import { getCartItemIssue, CART_ISSUE_TEXT } from '@snackstore/shared'
 import { useCartStore } from '@/stores/cart'
 import { useUserStore } from '@/stores/user'
 import { sanitizeHtml } from '@/utils/sanitize'
@@ -93,6 +94,12 @@ function goBack() {
 }
 
 function addToCart() {
+  const exist = cartStore.items.find((item) => item.productId === product.value.id)
+  const issue = getCartItemIssue({ quantity: (exist?.quantity ?? 0) + 1 }, product.value)
+  if (issue) {
+    showToast(CART_ISSUE_TEXT[issue])
+    return
+  }
   cartStore.addItem(product.value)
   showSuccessToast('已加入购物车')
 }
@@ -101,6 +108,11 @@ function buyNow() {
   if (!userStore.isLoggedIn) {
     showToast('请先登录')
     router.push({ path: '/login', query: { redirect: route.fullPath } })
+    return
+  }
+  const issue = getCartItemIssue({ quantity: 1 }, product.value)
+  if (issue) {
+    showToast(CART_ISSUE_TEXT[issue])
     return
   }
   // 直购商品写入独立快照并带标记跳转，确认订单页只结算该商品，不再牵连整个购物车

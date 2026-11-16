@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { mergeCartItems, calcCentsTotal } from './cart.js'
+import { mergeCartItems, calcCentsTotal, getCartItemIssue } from './cart.js'
 
 describe('mergeCartItems', () => {
   it('同 productId 累加数量', () => {
@@ -38,5 +38,40 @@ describe('calcCentsTotal', () => {
   })
   it('数量参与计算', () => {
     expect(calcCentsTotal([{ price: 9.9, quantity: 2 }])).toBe(19.8)
+  })
+})
+
+describe('getCartItemIssue', () => {
+  it('在售且库存充足返回 null', () => {
+    expect(getCartItemIssue({ quantity: 2 }, { status: 1, stock: 10 })).toBeNull()
+  })
+
+  it('数量刚好等于库存仍可结算', () => {
+    expect(getCartItemIssue({ quantity: 3 }, { status: 1, stock: 3 })).toBeNull()
+  })
+
+  it('下架优先于库存，返回 offline', () => {
+    expect(getCartItemIssue({ quantity: 1 }, { status: 0, stock: 99 })).toBe('offline')
+    expect(getCartItemIssue({ quantity: 1 }, { status: 0, stock: 0 })).toBe('offline')
+  })
+
+  it('无库存返回 soldout', () => {
+    expect(getCartItemIssue({ quantity: 1 }, { status: 1, stock: 0 })).toBe('soldout')
+  })
+
+  it('数量超过库存返回 insufficient', () => {
+    expect(getCartItemIssue({ quantity: 4 }, { status: 1, stock: 3 })).toBe('insufficient')
+  })
+
+  it('商品详情缺失（查询失败）时不判失效，避免网络波动阻碍下单', () => {
+    expect(getCartItemIssue({ quantity: 1 }, null)).toBeNull()
+    expect(getCartItemIssue({ quantity: 1 }, undefined)).toBeNull()
+  })
+
+  it('stock 字段缺失或非法时无法判断，返回 null 而非误报', () => {
+    expect(getCartItemIssue({ quantity: 99 }, { status: 1 })).toBeNull()
+    expect(getCartItemIssue({ quantity: 99 }, { status: 1, stock: '' })).toBeNull()
+    expect(getCartItemIssue({ quantity: 99 }, { status: 1, stock: null })).toBeNull()
+    expect(getCartItemIssue({ quantity: 99 }, { status: 1, stock: 'abc' })).toBeNull()
   })
 })

@@ -33,3 +33,29 @@ export function calcCentsTotal(items = []) {
   )
   return cents / 100
 }
+
+/**
+ * 判断购物车/直购快照相对服务端最新商品是否可结算。
+ * 商品详情缺失或库存字段非法时返回 null（不判失效）：查询失败不能替用户否决下单。
+ * @param {{quantity: number}} item 本地快照
+ * @param {{status?: number, stock?: number}|null} product 服务端最新商品详情
+ * @returns {'offline'|'soldout'|'insufficient'|null}
+ */
+export function getCartItemIssue(item, product) {
+  if (!product) return null
+  if (product.status === 0) return 'offline'
+  const raw = product.stock
+  if (raw === null || raw === undefined || raw === '') return null
+  const stock = Number(raw)
+  if (!Number.isFinite(stock)) return null
+  if (stock <= 0) return 'soldout'
+  if (Number(item && item.quantity) > stock) return 'insufficient'
+  return null
+}
+
+/** 失效原因的统一文案（两端口径一致） */
+export const CART_ISSUE_TEXT = {
+  offline: '商品已下架',
+  soldout: '商品已售罄',
+  insufficient: '库存不足，请减少数量'
+}

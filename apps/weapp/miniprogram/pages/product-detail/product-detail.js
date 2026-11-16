@@ -1,5 +1,6 @@
 import { getProductDetail } from '../../api/product.js'
-import { addItem, setBuyNowItem } from '../../stores/cart.js'
+import { addItem, setBuyNowItem, getItems } from '../../stores/cart.js'
+import { getCartItemIssue, CART_ISSUE_TEXT } from '@snackstore/shared/cart'
 import { isLoggedIn } from '../../stores/user.js'
 import { toastFail, toastSuccess } from '../../utils/toast.js'
 
@@ -51,6 +52,12 @@ Page({
 
   onAddCart() {
     if (!this.data.product) return toastFail('信息未加载完成')
+    const exist = getItems().find((i) => i.productId === this.data.product.id)
+    const issue = getCartItemIssue(
+      { quantity: (exist ? exist.quantity : 0) + 1 },
+      this.data.product
+    )
+    if (issue) return toastFail(CART_ISSUE_TEXT[issue])
     addItem(this.data.product)
     toastSuccess('已加入购物车')
   },
@@ -66,6 +73,8 @@ Page({
       })
       return
     }
+    const issue = getCartItemIssue({ quantity: 1 }, this.data.product)
+    if (issue) return toastFail(CART_ISSUE_TEXT[issue])
     // 直购写入独立快照并带标记跳转，确认订单页只结算该商品（对齐 H5）
     setBuyNowItem(this.data.product, 1)
     wx.navigateTo({ url: '/pages/order-confirm/order-confirm?from=buyNow' })

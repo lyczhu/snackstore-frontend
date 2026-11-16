@@ -1,7 +1,8 @@
 import { getAddressList } from '../../api/address.js'
 import { postOrder } from '../../api/order.js'
+import { getProductDetail } from '../../api/product.js'
 import { cartStore, clearCart, clearBuyNowItem } from '../../stores/cart.js'
-import { calcCentsTotal } from '@snackstore/shared/cart'
+import { calcCentsTotal, getCartItemIssue, CART_ISSUE_TEXT } from '@snackstore/shared/cart'
 import { reconcileOrderAmount } from '@snackstore/shared/orderAmount'
 import { ensureLogin } from '../../utils/authGuard.js'
 import { toastFail, toastSuccess } from '../../utils/toast.js'
@@ -12,6 +13,11 @@ Page({
   data: {
     from: 'cart',
     items: [],
+    // 失效条目不进订单也不计入合计（productId 命中 itemIssues 即失效）
+    validItems: [],
+    invalidItems: [],
+    itemIssues: {},
+    checking: false,
     total: '0.00',
     addresses: [],
     address: null,
@@ -36,6 +42,7 @@ Page({
     this.syncItems()
     this.initialized = true
     this.loadAddresses()
+    this.validateItems()
   },
 
   // 从地址页返回时刷新：新增/删除/改默认都要让当前选择保持有效
@@ -59,7 +66,42 @@ Page({
   syncItems() {
     const s = cartStore.getSnapshot()
     const items = this.data.from === 'buyNow' ? [s.buyNowItem].filter(Boolean) : s.items
-    this.setData({ items, total: calcCentsTotal(items).toFixed(2) })
+    this.setData({
+      items,
+      validItems: items,
+      invalidItems: [],
+      total: calcCentsTotal(items).toFixed(2)
+    })
+  },
+
+  // 结算快照可能已过期：按服务端最新商品校验，失效条目不参与结算（对齐 OrderConfirm.vue）
+  validateItems() {
+    const items = this.data.items
+    if (!items.length) return
+    this.setData({ checking: true })
+    Promise.all(
+      items.map((item) =>
+        getProductDetail(item.productId)
+          .then((res) => ({ id: item.productId, issue: getCartItemIssue(item, res && res.data) }))
+          .catch(() => ({ id: item.productId, issue: null }))
+      )
+    ).then((list) => {
+      const issueMap = {}
+      list.forEach((x) => {
+        if (x.issue) issueMap[x.id] = x.issue
+      })
+      const validItems = items.filter((i) => !issueMap[i.productId])
+      const invalidItems = items
+        .filter((i) => issueMap[i.productId])
+        .map((i) => ({ ...i, issueText: CART_ISSUE_TEXT[issueMap[i.productId]] }))
+      this.setData({
+        checking: false,
+        itemIssues: issueMap,
+        validItems,
+        invalidItems,
+        total: calcCentsTotal(validItems).toFixed(2)
+      })
+    })
   },
 
   loadAddresses() {
@@ -103,10 +145,14 @@ Page({
       toastFail('请选择收货地址')
       return
     }
+    if (!this.data.validItems.length) {
+      toastFail('商品已失效，无法结算')
+      return
+    }
     this.setData({ loading: true })
     const a = this.data.address
     const data = {
-      items: this.data.items.map((item) => ({
+      items: this.data.validItems.map((item) => ({
         productId: item.productId,
         quantity: item.quantity
       })),
@@ -154,6 +200,14 @@ Page({
         })
       }
     })
+  },
+
+  goBackAfterInvalid() {
+    if (this.data.from === 'buyNow') {
+      wx.switchTab({ url: '/pages/home/home' })
+      return
+    }
+    wx.switchTab({ url: '/pages/cart/cart' })
   },
 
   goHome() {
