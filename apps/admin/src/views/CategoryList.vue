@@ -5,8 +5,8 @@
       <h3>分类管理</h3>
       <el-button type="primary" @click="showAddDialog">新增分类</el-button>
     </div>
-    <!-- 表格加载态 -->
-    <el-table v-loading="loading" :data="categories" border stripe>
+    <!-- 表格加载态；展示顺序按 sort 升序（后端已排序，前端兜底兼容 sort 缺失） -->
+    <el-table v-loading="loading" :data="sortedCategories" border stripe>
       <el-table-column prop="id" label="ID" width="80" />
       <el-table-column prop="name" label="分类名称" />
       <el-table-column prop="sort" label="排序" width="100" />
@@ -17,8 +17,22 @@
           }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="200">
-        <template #default="{ row }">
+      <el-table-column label="操作" width="320">
+        <template #default="{ row, $index }">
+          <el-button
+            size="small"
+            :disabled="$index === 0"
+            :loading="movingId === row.id"
+            @click="moveCategory(row, -1)"
+            >上移</el-button
+          >
+          <el-button
+            size="small"
+            :disabled="$index === sortedCategories.length - 1"
+            :loading="movingId === row.id"
+            @click="moveCategory(row, 1)"
+            >下移</el-button
+          >
           <el-button size="small" @click="editCategory(row)">编辑</el-button>
           <el-button size="small" type="danger" @click="handleDelete(row.id)">删除</el-button>
         </template>
@@ -51,8 +65,9 @@
 </template>
 
 <script setup>
-import { ref, reactive, nextTick, onMounted } from 'vue'
+import { ref, reactive, computed, nextTick, onMounted } from 'vue'
 import { getCategoryList, postCategory, putCategory, deleteCategory } from '@/api/product'
+import { buildSortUpdates } from '@/utils/sort'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
 const categories = ref([])
@@ -62,6 +77,13 @@ const isEdit = ref(false)
 const editId = ref(null)
 const formRef = ref(null)
 const submitting = ref(false)
+// 正在调整排序的分类 id，用于按钮 loading 防重复提交
+const movingId = ref(null)
+
+// sort 升序，sort 相同按 id 稳定排序（避免同值时每次刷新顺序跳动）
+const sortedCategories = computed(() =>
+  [...categories.value].sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0) || a.id - b.id)
+)
 
 const form = reactive({ name: '', sort: 0, status: 1 })
 const rules = { name: [{ required: true, message: '请输入分类名称', trigger: 'blur' }] }
@@ -122,6 +144,37 @@ async function submitForm() {
     /* ignore */
   } finally {
     submitting.value = false
+  }
+}
+
+/**
+ * 与相邻分类交换排序：只提交 sort 发生变化的条目，
+ * 保留人工设置的间隔（如 10/20/30），而非整体重排。
+ */
+async function moveCategory(row, delta) {
+  if (movingId.value) return
+  const list = sortedCategories.value
+  const updates = buildSortUpdates(list, row.id, delta)
+  if (!updates.length) return
+  movingId.value = row.id
+  try {
+    await Promise.all(
+      updates.map((update) => {
+        const source = list.find((item) => item.id === update.id)
+        // 后端 DTO 的 name 必填，因此带上原字段一起提交
+        return putCategory(update.id, {
+          name: source.name,
+          sort: update.sort,
+          status: source.status
+        })
+      })
+    )
+    ElMessage.success('排序已更新')
+    loadCategories()
+  } catch (e) {
+    /* 错误提示已由请求拦截器统一处理 */
+  } finally {
+    movingId.value = null
   }
 }
 
