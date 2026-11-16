@@ -25,9 +25,11 @@
     "format:check": "prettier --check .",
     "test": "pnpm -r run test",
     "test:coverage": "pnpm -r exec vitest run --coverage",
+    "e2e": "pnpm build:mobile && playwright test",
     "size": "pnpm build && pnpm -r run size"
   },
   "devDependencies": {
+    "@playwright/test": "catalog:",
     "@size-limit/file": "catalog:",
     "@snackstore/eslint-config": "workspace:*",
     "eslint": "catalog:",

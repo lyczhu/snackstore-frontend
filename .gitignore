@@ -45,6 +45,11 @@ Thumbs.db
 # Test
 coverage/
 
+# E2E（Playwright）产物
+playwright-report/
+test-results/
+blob-report/
+
 # Cache
 .cache/
 .turbo/
