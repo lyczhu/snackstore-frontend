@@ -32,6 +32,18 @@ Page({
     wx.navigateTo({ url: '/pages/address/address' })
   },
 
+  goDemo() {
+    wx.navigateTo({ url: '/pages/agreement/agreement?type=demo' })
+  },
+
+  goUser() {
+    wx.navigateTo({ url: '/pages/agreement/agreement?type=user' })
+  },
+
+  goPrivacy() {
+    wx.navigateTo({ url: '/pages/agreement/agreement?type=privacy' })
+  },
+
   async onLogout() {
     if (!(await confirm('确定要退出登录吗？'))) return
     logout()

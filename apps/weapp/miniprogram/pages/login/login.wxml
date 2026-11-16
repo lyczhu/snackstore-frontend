@@ -28,6 +28,17 @@
       bind:click-icon="togglePassword"
     />
 
+    <view class="agreement-row">
+      <van-checkbox value="{{agreed}}" icon-size="32rpx" bind:change="onAgree" />
+      <view class="agreement-text">
+        我已阅读并同意<text class="agreement-link" bind:tap="goUser">《用户协议》</text>和<text
+          class="agreement-link"
+          bind:tap="goPrivacy"
+          >《隐私政策》</text
+        >
+      </view>
+    </view>
+
     <view class="form-actions">
       <van-button block round type="primary" loading="{{loading}}" loading-text="提交中" bind:click="submit">
         登录

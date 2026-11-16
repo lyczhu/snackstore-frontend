@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "协议与说明",
+  "usingComponents": {
+    "van-button": "@vant/weapp/button/index",
+    "van-empty": "@vant/weapp/empty/index"
+  }
+}

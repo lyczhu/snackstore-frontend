@@ -20,6 +20,7 @@ Page({
     password: '',
     showPassword: false,
     loading: false,
+    agreed: false,
     errors: { phone: '', password: '' },
     redirect: ''
   },
@@ -42,6 +43,24 @@ Page({
     this.setData({ showPassword: !this.data.showPassword })
   },
 
+  onAgree(e) {
+    this.setData({ agreed: e.detail })
+  },
+
+  goUser() {
+    wx.navigateTo({ url: '/pages/agreement/agreement?type=user' })
+  },
+
+  goPrivacy() {
+    wx.navigateTo({ url: '/pages/agreement/agreement?type=privacy' })
+  },
+
+  ensureAgreed() {
+    if (this.data.agreed) return true
+    wx.showToast({ title: '请先阅读并同意用户协议和隐私政策', icon: 'none' })
+    return false
+  },
+
   validate() {
     const { phone, password } = this.data
     const errors = { phone: '', password: '' }
@@ -54,7 +73,7 @@ Page({
   },
 
   submit() {
-    if (this.data.loading || !this.validate()) return
+    if (this.data.loading || !this.validate() || !this.ensureAgreed()) return
     this.send(
       postLogin,
       { phone: this.data.phone, password: this.data.password },
@@ -66,7 +85,7 @@ Page({
   // 注册按钮非 submit，需手动触发校验（对齐 Login.vue handleRegister）；
   // 验证码仍是后端约定的固定值，待后端验证码接口就绪后改为表单收集
   register() {
-    if (this.data.loading || !this.validate()) return
+    if (this.data.loading || !this.validate() || !this.ensureAgreed()) return
     this.send(
       postRegister,
       { phone: this.data.phone, password: this.data.password, code: '123456' },

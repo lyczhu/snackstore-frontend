@@ -1,0 +1,26 @@
+<view class="agreement-page">
+  <van-empty wx:if="{{notFound}}" image="error" description="页面不存在">
+    <van-button round type="primary" size="small" bind:click="goBack">返回</van-button>
+  </van-empty>
+
+  <block wx:else>
+    <view class="doc-meta">最后更新：{{doc.updatedAt}}</view>
+    <view class="doc-summary">{{doc.summary}}</view>
+
+    <view wx:for="{{doc.sections}}" wx:key="index" class="doc-section">
+      <view class="section-title">{{item.heading}}</view>
+      <view wx:for="{{item.paragraphs}}" wx:for-item="text" wx:key="index" class="paragraph">
+        {{text}}
+      </view>
+      <view wx:if="{{item.bullets}}" class="bullet-list">
+        <view wx:for="{{item.bullets}}" wx:for-item="bullet" wx:key="index" class="bullet">
+          · {{bullet}}
+        </view>
+      </view>
+    </view>
+
+    <van-button block round plain type="primary" custom-class="back-btn" bind:click="goBack">
+      返回
+    </van-button>
+  </block>
+</view>

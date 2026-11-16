@@ -31,6 +31,15 @@
           ]"
           @click-right-icon="showPassword = !showPassword"
         />
+        <div class="agreement-row">
+          <van-checkbox v-model="agreed" icon-size="16px" shape="square" />
+          <span class="agreement-text">
+            我已阅读并同意<router-link to="/agreement/user">《用户协议》</router-link>和<router-link
+              to="/agreement/privacy"
+              >《隐私政策》</router-link
+            >
+          </span>
+        </div>
         <div class="form-actions">
           <van-button block round type="primary" native-type="submit" :loading="loading">
             登录
@@ -55,9 +64,10 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { showSuccessToast } from 'vant'
+import { showSuccessToast, showToast } from 'vant'
 import { postLogin, postRegister } from '@/api/user'
 import { useUserStore } from '@/stores/user'
+import { useAgreementConsent } from '@/composables/useAgreementConsent'
 
 const router = useRouter()
 const route = useRoute()
@@ -65,6 +75,7 @@ const userStore = useUserStore()
 const formRef = ref(null)
 const loading = ref(false)
 const showPassword = ref(false)
+const agreed = useAgreementConsent()
 
 // 移除预填测试账号，测试凭据不得随构建发布到生产环境
 const form = reactive({
@@ -72,7 +83,14 @@ const form = reactive({
   password: ''
 })
 
+function ensureAgreed() {
+  if (agreed.value) return true
+  showToast('请先阅读并同意用户协议和隐私政策')
+  return false
+}
+
 async function handleLogin() {
+  if (!ensureAgreed()) return
   loading.value = true
   try {
     const res = await postLogin(form)
@@ -99,6 +117,7 @@ async function handleRegister() {
   } catch {
     return
   }
+  if (!ensureAgreed()) return
   loading.value = true
   try {
     // 验证码仍为后端约定的固定值；待后端短信/图形验证码接口就绪后，
@@ -146,6 +165,23 @@ async function handleRegister() {
     text-align: center;
     color: var(--color-text-placeholder);
     margin-bottom: 24px;
+  }
+}
+
+.agreement-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.agreement-text {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+
+  a {
+    color: var(--color-primary);
   }
 }
 

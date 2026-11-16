@@ -47,6 +47,24 @@
         <van-icon name="arrow" class="arrow" />
       </button>
     </div>
+
+    <div class="menu-list about-list">
+      <router-link to="/agreement/demo" class="menu-item">
+        <van-icon name="info-o" />
+        <span>演示环境说明</span>
+        <van-icon name="arrow" class="arrow" />
+      </router-link>
+      <router-link to="/agreement/user" class="menu-item">
+        <van-icon name="description" />
+        <span>用户协议</span>
+        <van-icon name="arrow" class="arrow" />
+      </router-link>
+      <router-link to="/agreement/privacy" class="menu-item">
+        <van-icon name="shield-o" />
+        <span>隐私政策</span>
+        <van-icon name="arrow" class="arrow" />
+      </router-link>
+    </div>
   </div>
 </template>
 
@@ -129,6 +147,10 @@ async function handleLogout() {
   background: #fff;
   border-radius: 12px;
   overflow: hidden;
+}
+
+.about-list {
+  margin-top: 16px;
 }
 
 .menu-item {

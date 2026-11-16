@@ -10,6 +10,7 @@
     "pages/order-list/order-list",
     "pages/order-detail/order-detail",
     "pages/payment/payment",
+    "pages/agreement/agreement",
     "pages/address/address"
   ],
   "window": {

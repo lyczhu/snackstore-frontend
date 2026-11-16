@@ -31,6 +31,23 @@
   color: var(--color-text-placeholder);
 }
 
+.agreement-row {
+  display: flex;
+  align-items: flex-start;
+  margin-top: 32rpx;
+}
+
+.agreement-text {
+  margin-left: 16rpx;
+  font-size: 24rpx;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+}
+
+.agreement-link {
+  color: var(--color-primary);
+}
+
 .form-actions {
   margin-top: 48rpx;
 }

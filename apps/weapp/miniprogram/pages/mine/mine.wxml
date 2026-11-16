@@ -52,4 +52,22 @@
       <van-icon name="arrow" class="arrow" size="32rpx" />
     </view>
   </view>
+
+  <view class="menu-list about-list">
+    <view class="menu-item" hover-class="menu-item--hover" hover-stay-time="80" bind:tap="goDemo">
+      <van-icon name="info-o" size="40rpx" color="#323233" />
+      <text class="menu-text">演示环境说明</text>
+      <van-icon name="arrow" class="arrow" size="32rpx" />
+    </view>
+    <view class="menu-item" hover-class="menu-item--hover" hover-stay-time="80" bind:tap="goUser">
+      <van-icon name="description" size="40rpx" color="#323233" />
+      <text class="menu-text">用户协议</text>
+      <van-icon name="arrow" class="arrow" size="32rpx" />
+    </view>
+    <view class="menu-item" hover-class="menu-item--hover" hover-stay-time="80" bind:tap="goPrivacy">
+      <van-icon name="shield-o" size="40rpx" color="#323233" />
+      <text class="menu-text">隐私政策</text>
+      <van-icon name="arrow" class="arrow" size="32rpx" />
+    </view>
+  </view>
 </view>

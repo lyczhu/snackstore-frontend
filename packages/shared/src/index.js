@@ -4,6 +4,7 @@ export { createProductApi, createOrderApi, createUserApi } from './api.js'
 export { safeParse } from './storage.js'
 export { mergeCartItems, calcCentsTotal } from './cart.js'
 export { createPaymentProvider, parseServerTime, PAYMENT_WINDOW_MS } from './payment.js'
+export { getAgreement, AGREEMENT_TYPES } from './agreements.js'
 export {
   configureErrorTracking,
   reportError,

@@ -18,7 +18,8 @@ const sharedFiles = [
   'constants.js',
   'response.js',
   'errorTracking.js',
-  'payment.js'
+  'payment.js',
+  'agreements.js'
 ]
 
 if (!existsSync(vantLib)) {
@@ -49,6 +50,7 @@ const barrel = [
   "export { interpretResponse } from './response.js'",
   "export { configureErrorTracking, reportError, setupErrorTracking, resetErrorTracking } from './errorTracking.js'",
   "export { createPaymentProvider, parseServerTime, PAYMENT_WINDOW_MS } from './payment.js'",
+  "export { getAgreement, AGREEMENT_TYPES } from './agreements.js'",
   ''
 ].join('\n')
 await writeFile(resolve(outDir, '@snackstore', 'shared', 'index.js'), barrel, 'utf8')

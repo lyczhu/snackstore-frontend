@@ -72,6 +72,12 @@ const routes = [
     meta: { title: '收银台', requiresAuth: true }
   },
   {
+    path: '/agreement/:type',
+    name: 'Agreement',
+    component: () => import('@/views/Agreement.vue'),
+    meta: { title: '协议与说明', requiresAuth: false }
+  },
+  {
     path: '/address',
     name: 'AddressList',
     component: () => import('@/views/AddressList.vue'),
