@@ -28,7 +28,7 @@
         </template>
       </el-table-column>
       <el-table-column prop="createdAt" label="下单时间" width="180" />
-      <el-table-column label="操作" width="240">
+      <el-table-column label="操作" width="320">
         <template #default="{ row }">
           <el-button size="small" @click="viewDetail(row)">详情</el-button>
           <!-- 操作按钮防重复提交 -->
@@ -48,6 +48,16 @@
             :loading="cancelId === row.id"
             @click="handleCancel(row.id)"
             >取消订单</el-button
+          >
+          <!-- 后端 DELETE /orders/{id} 仅允许删除已取消订单，故只在此状态展示 -->
+          <el-button
+            v-if="row.status === 2"
+            size="small"
+            type="danger"
+            plain
+            :loading="deleteId === row.id"
+            @click="handleDelete(row.id)"
+            >删除</el-button
           >
         </template>
       </el-table-column>
@@ -110,7 +120,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { getOrderList, getOrderDetail, payOrder, cancelOrder } from '@/api/order'
+import { getOrderList, getOrderDetail, payOrder, cancelOrder, deleteOrder } from '@/api/order'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getOrderStatusText } from '@snackstore/shared'
 import { useTable } from '@/composables/useTable'
@@ -128,6 +138,7 @@ const detailVisible = ref(false)
 const currentOrder = ref(null)
 const actionId = ref(null)
 const cancelId = ref(null)
+const deleteId = ref(null)
 
 /** 筛选变更回到第一页 */
 function onSearch() {
@@ -178,6 +189,27 @@ async function handleCancel(id) {
     /* ignore */
   } finally {
     cancelId.value = null
+  }
+}
+
+/** 删除订单（后端仅允许删除已取消订单） */
+async function handleDelete(id) {
+  try {
+    await ElMessageBox.confirm('删除后不可恢复，确定删除该订单？', '删除订单', {
+      type: 'warning'
+    })
+  } catch {
+    return
+  }
+  deleteId.value = id
+  try {
+    await deleteOrder(id)
+    ElMessage.success('已删除')
+    load()
+  } catch (e) {
+    /* ignore */
+  } finally {
+    deleteId.value = null
   }
 }
 

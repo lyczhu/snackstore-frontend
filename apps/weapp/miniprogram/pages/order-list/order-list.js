@@ -6,9 +6,9 @@ import { confirm } from '../../utils/confirm.js'
 import { ensureLogin } from '../../utils/authGuard.js'
 import { toastSuccess } from '../../utils/toast.js'
 
-// tab → status 查询参数：与 OrderList.vue 一致只有 全部/待支付/已完成 三档（后端无已取消 tab）
-const TAB_STATUS = { all: undefined, pending: 0, completed: 1 }
-const TABS = ['all', 'pending', 'completed']
+// tab → status 查询参数：与 OrderList.vue 保持一致（全部/待支付/已完成/已取消）
+const TAB_STATUS = { all: undefined, pending: 0, completed: 1, cancelled: 2 }
+const TABS = ['all', 'pending', 'completed', 'cancelled']
 
 Page({
   data: {

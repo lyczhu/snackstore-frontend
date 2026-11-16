@@ -23,7 +23,9 @@ export function createOrderApi(request) {
     getOrderList: (params, signal) => request.get('/orders', { params, signal }),
     getOrderDetail: (id) => request.get(`/orders/${id}`),
     payOrder: (id) => request.patch(`/orders/${id}/status`, null, { params: { status: 1 } }),
-    cancelOrder: (id) => request.patch(`/orders/${id}/status`, null, { params: { status: 2 } })
+    cancelOrder: (id) => request.patch(`/orders/${id}/status`, null, { params: { status: 2 } }),
+    // 后端 deleteOrder 仅允许已删除已取消订单，调用方需自行判断状态
+    deleteOrder: (id) => request.delete(`/orders/${id}`)
   }
 }
 

@@ -3,6 +3,7 @@
     <van-tab title="全部" name="all" />
     <van-tab title="待支付" name="pending" />
     <van-tab title="已完成" name="completed" />
+    <van-tab title="已取消" name="cancelled" />
   </van-tabs>
 
   <view wx:if="{{loadError}}" class="error-retry" bind:tap="reload">

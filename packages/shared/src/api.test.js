@@ -57,6 +57,13 @@ describe('createOrderApi', () => {
     expect(request.get).toHaveBeenCalledWith('/orders', { params: { pageNum: 2 }, signal })
     expect(request.get).toHaveBeenCalledWith('/orders/9')
   })
+
+  it('deleteOrder 走 DELETE /orders/{id}（后端仅允许删除已取消订单）', () => {
+    const request = stubRequest()
+    const api = createOrderApi(request)
+    api.deleteOrder(11)
+    expect(request.delete).toHaveBeenCalledWith('/orders/11')
+  })
 })
 
 describe('createUserApi', () => {

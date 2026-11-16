@@ -6,6 +6,7 @@
       <van-tab title="全部" name="all" />
       <van-tab title="待支付" name="pending" />
       <van-tab title="已完成" name="completed" />
+      <van-tab title="已取消" name="cancelled" />
     </van-tabs>
 
     <!-- 加载失败错误态，点击重试 -->
@@ -107,6 +108,7 @@ const {
     const params = { userId: userStore.userInfo?.id, pageNum, pageSize }
     if (activeTab.value === 'pending') params.status = 0
     if (activeTab.value === 'completed') params.status = 1
+    if (activeTab.value === 'cancelled') params.status = 2
     return getOrderList(params, signal)
   }
 })
